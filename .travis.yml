@@ -1,25 +1,30 @@
+sudo: required
 language: bash
-services: docker
 
+# Required external env variables:
+# - PROJECT: Google Cloud Platform project, e.g: my-project
+# - BASE64_KEY: Base64 encoded service account json key for $PROJECT
+# Optional external env variables:
+# - REGISTRY: Google Cloud Registry, e.g.: gcr.io/my-project
+# - BUCKET: Google Cloud Storage bucket, e.g.: my-bucket
 env:
-  - VERSION=8.0
-  - VERSION=5.7
-  - VERSION=5.6
-  - VERSION=5.5
-
-install:
-  - git clone https://github.com/docker-library/official-images.git ~/official-images
+  global:
+    - GCLOUD_CMD=google-cloud-sdk/gcloud/bin
+    - KEYFILE=service-account.json
+  matrix:
+    - NAME=mysql5 TAG=5.5 DOCKERFILE_DIR=5.5
+    - NAME=mysql5 TAG=5.6 DOCKERFILE_DIR=5.6
+    - NAME=mysql5 TAG=5.7 DOCKERFILE_DIR=5.7
+    - NAME=mysql8 TAG=8.0 DOCKERFILE_DIR=8.0
 
 before_script:
+  - if [ -z "$REGISTRY" ]; then export REGISTRY="gcr.io/$PROJECT"; fi
+  - if [ -z "$BUCKET" ]; then export BUCKET="$PROJECT.appspot.com"; fi
   - env | sort
-  - cd "$VERSION"
-  - image="mysql:$VERSION"
 
+install:
+  - scripts/extract-keyfile.sh
+  - scripts/setup-gcloud.sh
+  
 script:
-  - docker build -t "$image" .
-  - ~/official-images/test/run.sh "$image"
-
-after_script:
-  - docker images
-
-# vim:set et ts=2 sw=2:
+  - scripts/build.sh

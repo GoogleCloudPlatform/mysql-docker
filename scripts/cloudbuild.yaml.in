@@ -1,0 +1,13 @@
+# All items surrounded by ${} are variables to be replaced with real values.
+# ${REGISTRY}: The registry endpoint to push to e.g. "gcr.io/my-project"
+# ${NAME}: The repository name to push to e.g. "php5-apache"
+# ${TAG}: What to tag the image with, e.g. "latest"
+# ${DOCKERFILE_DIR}: Relative path to the Dockerfile, e.g. "5.6/apache"
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - 'build'
+      - '--tag=${REGISTRY}/${NAME}:${TAG}'
+      - '${DOCKERFILE_DIR}'
+images:
+  - '${REGISTRY}/${NAME}:${TAG}'
