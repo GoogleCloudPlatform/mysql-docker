@@ -1,8 +1,4 @@
 from: debian:jessie
-sharedPackages:
-  - name: gosu
-    version: 1.7
-    gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
 versions:
   - dir: 8.0
     repo: mysql8
@@ -12,8 +8,10 @@ versions:
       - 8
       - latest
     packages:
-      - name: gosu
-      - name: mysql
+      gosu: &gosu
+        version: 1.7
+        gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
+      mysql:
         version: 8.0.0-dmr-1debian8
         major: 8.0
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
@@ -25,8 +23,8 @@ versions:
       - 5
       - latest
     packages:
-      - name: gosu
-      - name: mysql
+      gosu: *gosu
+      mysql:
         version: 5.7.16-1debian8
         major: 5.7
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
@@ -36,8 +34,8 @@ versions:
       - 5.6.34
       - 5.6
     packages:
-      - name: gosu
-      - name: mysql
+      gosu: *gosu
+      mysql:
         version: 5.6.34-1debian8
         major: 5.6
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
@@ -47,8 +45,8 @@ versions:
       - 5.5.53
       - 5.5
     packages:
-      - name: gosu
-      - name: mysql
+      gosu: *gosu
+      mysql:
         version: 5.5.53
         major: 5.5
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
