@@ -1,16 +1,17 @@
-FROM debian:jessie
+FROM {{ .From }}
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
 # add gosu for easy step-down from root
-ENV GOSU_VERSION 1.7
+{{- $gosu := index .Packages "gosu" }}
+ENV GOSU_VERSION {{ $gosu.Version }}
 RUN set -x \
 	&& apt-get update && apt-get install -y --no-install-recommends ca-certificates wget && rm -rf /var/lib/apt/lists/* \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys {{ $gosu.Gpg }} \
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
 	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
@@ -26,12 +27,50 @@ RUN mkdir /docker-entrypoint-initdb.d
 # Data::Dumper
 RUN apt-get update && apt-get install -y libaio1 perl pwgen --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.16-1debian8
+{{ $mysql := index .Packages "mysql" -}}
+ENV MYSQL_MAJOR {{ $mysql.Major }}
+ENV MYSQL_VERSION {{ $mysql.Version }}
 
-
+{{ if (eq .Dir "5.5") -}}
+RUN apt-get update && apt-get install -y ca-certificates wget --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+	&& wget "https://cdn.mysql.com/Downloads/MySQL-$MYSQL_MAJOR/mysql-$MYSQL_VERSION-linux2.6-x86_64.tar.gz" -O mysql.tar.gz \
+	&& wget "https://cdn.mysql.com/Downloads/MySQL-$MYSQL_MAJOR/mysql-$MYSQL_VERSION-linux2.6-x86_64.tar.gz.asc" -O mysql.tar.gz.asc \
+	&& apt-get purge -y --auto-remove ca-certificates wget \
+	&& export GNUPGHOME="$(mktemp -d)" \
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys {{ $mysql.Gpg }} \
+	&& gpg --batch --verify mysql.tar.gz.asc mysql.tar.gz \
+	&& rm -r "$GNUPGHOME" mysql.tar.gz.asc \
+	&& mkdir /usr/local/mysql \
+	&& tar -xzf mysql.tar.gz -C /usr/local/mysql --strip-components=1 \
+	&& rm mysql.tar.gz \
+	&& rm -rf /usr/local/mysql/mysql-test /usr/local/mysql/sql-bench \
+	&& rm -rf /usr/local/mysql/bin/*-debug /usr/local/mysql/bin/*_embedded \
+	&& find /usr/local/mysql -type f -name "*.a" -delete \
+	&& apt-get update && apt-get install -y binutils && rm -rf /var/lib/apt/lists/* \
+	&& { find /usr/local/mysql -type f -executable -exec strip --strip-all '{}' + || true; } \
+	&& apt-get purge -y --auto-remove binutils
+ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
+
+# replicate some of the way the APT package configuration works
+# this is only for 5.5 since it doesn't have an APT repo, and will go away when 5.5 does
+RUN mkdir -p /etc/mysql/conf.d \
+	&& { \
+		echo '[mysqld]'; \
+		echo 'skip-host-cache'; \
+		echo 'skip-name-resolve'; \
+		echo 'datadir = /var/lib/mysql'; \
+		echo '!includedir /etc/mysql/conf.d/'; \
+	} > /etc/mysql/my.cnf
+
+RUN mkdir -p /var/lib/mysql /var/run/mysqld \
+	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
+# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
+	&& chmod 777 /var/run/mysqld
+{{- end }}
+{{- if (ne .Dir "5.5") }}
+# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
+RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys {{ $mysql.Gpg }}
 
 RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
@@ -51,8 +90,15 @@ RUN { \
 
 # comment out a few problematic configuration values
 # don't reverse lookup hostnames, they are usually another container
+{{- if or (eq .Dir "5.7") (eq .Dir "8.0") }}
 RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/mysql.conf.d/mysqld.cnf \
 	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
+{{- end }}	
+{{- if (eq .Dir "5.6") }}
+RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
+	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
+{{- end }}
+{{- end }}
 
 VOLUME /var/lib/mysql
 
