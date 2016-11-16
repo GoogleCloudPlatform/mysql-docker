@@ -6,7 +6,7 @@ versions:
       - 8.0
       - 8
       - latest
-    from: &from debian:jessie
+    from: &from gcr.io/google-appengine/debian8
     packages:
       gosu: &gosu
         version: 1.7
