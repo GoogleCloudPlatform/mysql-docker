@@ -3,53 +3,53 @@ versions:
     repo: mysql8
     tags:
       - 8.0.0
-      - 8.0
-      - 8
+      - '8.0'
+      - '8'
       - latest
     from: &from gcr.io/google-appengine/debian8
     packages:
       gosu: &gosu
-        version: 1.7
+        version: '1.7'
         gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
       mysql:
         version: 8.0.0-dmr-1debian8
-        major: 8.0
+        major: '8.0'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
   - dir: '5.7'
     repo: mysql5
     tags:
       - 5.7.16
-      - 5.7
-      - 5
+      - '5.7'
+      - '5'
       - latest
     from: *from
     packages:
       gosu: *gosu
       mysql:
         version: 5.7.16-1debian8
-        major: 5.7
+        major: '5.7'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
   - dir: '5.6'
     repo: mysql5
     tags:
       - 5.6.34
-      - 5.6
+      - '5.6'
     from: *from
     packages:
       gosu: *gosu
       mysql:
         version: 5.6.34-1debian8
-        major: 5.6
+        major: '5.6'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
   - dir: '5.5'
     repo: mysql5
     tags:
       - 5.5.53
-      - 5.5
+      - '5.5'
     from: *from
     packages:
       gosu: *gosu
       mysql:
         version: 5.5.53
-        major: 5.5
+        major: '5.5'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
