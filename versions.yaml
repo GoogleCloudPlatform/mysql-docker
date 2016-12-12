@@ -18,7 +18,7 @@ versions:
   - dir: '5.7'
     repo: mysql5
     tags:
-      - 5.7.16
+      - 5.7.17
       - '5.7'
       - '5'
       - latest
@@ -26,30 +26,30 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 5.7.16-1debian8
+        version: 5.7.17-1debian8
         major: '5.7'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
   - dir: '5.6'
     repo: mysql5
     tags:
-      - 5.6.34
+      - 5.6.35
       - '5.6'
     from: *from
     packages:
       gosu: *gosu
       mysql:
-        version: 5.6.34-1debian8
+        version: 5.6.35-1debian8
         major: '5.6'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
   - dir: '5.5'
     repo: mysql5
     tags:
-      - 5.5.53
+      - 5.5.54
       - '5.5'
     from: *from
     packages:
       gosu: *gosu
       mysql:
-        version: 5.5.53
+        version: 5.5.54
         major: '5.5'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
