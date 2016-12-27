@@ -32,7 +32,7 @@ RUN mkdir /docker-entrypoint-initdb.d
 RUN apt-get update && apt-get install -y libaio1 perl pwgen --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.16-1debian8
+ENV MYSQL_VERSION 5.7.17-1debian8
 
 
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
