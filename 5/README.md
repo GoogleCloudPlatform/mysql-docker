@@ -1,24 +1,58 @@
-# About
+# <a name="about"a></a>About
 
 This image contains an installation MySQL 5.x.
 
 For more information, see the
-[Official Image Launcher Page](http://cloud.google.com/launcher/details/google/mysql5).
+[Official Image Launcher Page](https://console.cloud.google.com/launcher/details/google/mysql5).
 
 Pull command:
 ```shell
 gcloud docker -- pull launcher.gcr.io/google/mysql5
 ```
 
-[Dockerfile](https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/5.7)
+Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/5/5.7).
 
-# Running MySQL server
+# <a name="table-of-contents"></a>Table of Contents
+* [Using Kubernetes](#using-kubernetes)
+  * [Running MySQL server](#running-mysql-server-kubernetes)
+    * [Start a MySQL instance](#start-a-mysql-instance-kubernetes)
+    * [Use a persistent data volume](#use-a-persistent-data-volume-kubernetes)
+    * [Securely set up the server](#securely-set-up-the-server-kubernetes)
+  * [Command line MySQL client](#command-line-mysql-client-kubernetes)
+    * [Connect to a running MySQL container](#connect-to-a-running-mysql-container-kubernetes)
+    * [Connect command line client to a remote MySQL instance](#connect-command-line-client-to-a-remote-mysql-instance-kubernetes)
+  * [Configurations](#configurations-kubernetes)
+    * [Using configuration volume](#using-configuration-volume-kubernetes)
+    * [Using flags](#using-flags-kubernetes)
+  * [Maintenance](#maintenance-kubernetes)
+    * [Creating database dumps](#creating-database-dumps-kubernetes)
+* [Using Docker](#using-docker)
+  * [Running MySQL server](#running-mysql-server-docker)
+    * [Start a MySQL instance](#start-a-mysql-instance-docker)
+    * [Use a persistent data volume](#use-a-persistent-data-volume-docker)
+    * [Securely set up the server](#securely-set-up-the-server-docker)
+  * [Command line MySQL client](#command-line-mysql-client-docker)
+    * [Connect to a running MySQL container](#connect-to-a-running-mysql-container-docker)
+    * [Connect command line client to a remote MySQL instance](#connect-command-line-client-to-a-remote-mysql-instance-docker)
+  * [Configurations](#configurations-docker)
+    * [Using configuration volume](#using-configuration-volume-docker)
+    * [Using flags](#using-flags-docker)
+  * [Maintenance](#maintenance-docker)
+    * [Creating database dumps](#creating-database-dumps-docker)
+* [References](#references)
+  * [Ports](#references-ports)
+  * [Environment Variables](#references-environment-variables)
+  * [Volumes](#references-volumes)
+
+# <a name="using-kubernetes"></a>Using Kubernetes
+
+## <a name="running-mysql-server-kubernetes"></a>Running MySQL server
 
 This section describes how to spin up a MySQL service using this image.
 
-## Start a MySQL instance
+### <a name="start-a-mysql-instance-kubernetes"></a>Start a MySQL instance
 
-To deploy to your Kubernetes cluster, copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -35,44 +69,23 @@ spec:
           value: example-password
 ```
 
-Then run the following to expose the port:
+Run the following to expose the port:
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
 ```
 
-Or, use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
-```yaml
-version: '2'
-services:
-  mysql:
-    image: launcher.gcr.io/google/mysql5
-    environment:
-      MYSQL_ROOT_PASSWORD: example-password
-```
+For information about how to retain your database across restarts, see [Use a persistent data volume](#use-a-persistent-data-volume-kubernetes).
 
-Or, run `docker` from your shell:
-```shell
-docker run \
-  --name some-mysql \
-  -e MYSQL_ROOT_PASSWORD=example-password \
-  -d \
-  launcher.gcr.io/google/mysql5
-```
+See [Configurations](#configurations-kubernetes) for how to customize your MySQL service instance.
 
-MySQL server is accessible on port 3306.
+Also see [Securely set up the server](#securely-set-up-the-server-kubernetes) for how to bootstrap the server with a more secure root password, without exposing it on the command line.
 
-For information about how to retain your database across restarts, see [Use a persistent data volume](#use-a-persistent-data-volume).
-
-See [Configurations](#configurations) for how to customize your MySQL service instance.
-
-Also see [Securely set up the server](#securely-set-up-the-server) for how to bootstrap the server with a more secure root password, without exposing it on the command line.
-
-## Use a persistent data volume
+### <a name="use-a-persistent-data-volume-kubernetes"></a>Use a persistent data volume
 
 We can store MySQL data on a persistent volume. This way the database remains intact across restarts.
 
-To deploy to your Kubernetes cluster, copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -110,45 +123,21 @@ spec:
       storage: 5Gi
 ```
 
-Then run the following to expose the port:
+Run the following to expose the port:
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
 ```
 
-Or, use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
-```yaml
-version: '2'
-services:
-  mysql:
-    image: launcher.gcr.io/google/mysql5
-    environment:
-      MYSQL_ROOT_PASSWORD: example-password
-    volumes:
-      - /my/persistent/dir/mysql:/var/lib/mysql
-```
-
-Or, run `docker` from your shell:
-```shell
-docker run \
-  --name some-mysql \
-  -e MYSQL_ROOT_PASSWORD=example-password \
-  -v /my/persistent/dir/mysql:/var/lib/mysql \
-  -d \
-  launcher.gcr.io/google/mysql5
-```
-
-For `docker` and `docker-compose`, `/my/persistent/dir/mysql` is the persistent directory on the host.
-
 Note that once the database directory is established, `MYSQL_ROOT_PASSWORD` will be ignored when the instance restarts.
 
-## Securely set up the server
+### <a name="securely-set-up-the-server-kubernetes"></a>Securely set up the server
 
 A recommended way to start up your MySQL server is to have the root password generated as a onetime password. You will then log on and change this password. MySQL will not fully function until this onetime password is changed.
 
 Start the container with both environment variables `MYSQL_RANDOM_ROOT_PASSWORD` and `MYSQL_ONETIME_PASSWORD` set to `yes`.
 
-To deploy to your Kubernetes cluster, copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -167,45 +156,18 @@ spec:
           value: yes
 ```
 
-Then run the following to expose the port:
+Run the following to expose the port:
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
-```
-
-Or, use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
-```yaml
-version: '2'
-services:
-  mysql:
-    image: launcher.gcr.io/google/mysql5
-    environment:
-      MYSQL_ONETIME_PASSWORD: yes
-      MYSQL_RANDOM_ROOT_PASSWORD: yes
-```
-
-Or, run `docker` from your shell:
-```shell
-docker run \
-  --name some-mysql \
-  -e MYSQL_ONETIME_PASSWORD=yes \
-  -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
-  -d \
-  launcher.gcr.io/google/mysql5
 ```
 
 You can then obtain the generated password by viewing the container log and look for the "GENERATED ROOT PASSWORD" line.
 
 Open a shell to the container.
 
-Run `kubectl` from your shell to connect to your Kubernetes cluster.
 ```shell
 kubectl exec -it some-mysql -- bash
-```
-
-Or, run `docker` from your shell:
-```shell
-docker exec -it some-mysql bash
 ```
 
 Now log in with the generated onetime password.
@@ -218,65 +180,48 @@ Once logged in, you can change the root password.
 ALTER USER root IDENTIFIED BY 'new-password';
 ```
 
-Also see [Environment variable reference](#environment-variables) for more information.
+Also see [Environment Variable reference](#references-environment-variables) for more information.
 
-# Command line MySQL client
+## <a name="command-line-mysql-client-kubernetes"></a>Command line MySQL client
 
 This section describes how to use this image as a MySQL client.
 
-## Connect to a running MySQL container
+### <a name="connect-to-a-running-mysql-container-kubernetes"></a>Connect to a running MySQL container
 
 You can run a MySQL client directly within the container.
 
-Run `kubectl` from your shell to connect to your Kubernetes cluster.
 ```shell
 kubectl exec -it some-mysql -- mysql -uroot -p
 ```
 
-Or, run `docker` from your shell:
-```shell
-docker exec -it some-mysql mysql -uroot -p
-```
-
-## Connect command line client to a remote MySQL instance
+### <a name="connect-command-line-client-to-a-remote-mysql-instance-kubernetes"></a>Connect command line client to a remote MySQL instance
 
 Assume that we have a MySQL instance running at `some.mysql.host` and we want to log on as `some-mysql-user` when connecting.
 
-Run `kubectl` from your shell to connect to your Kubernetes cluster.
 ```shell
 kubectl run \
   some-mysql-client \
   --image launcher.gcr.io/google/mysql5 \
   --rm --attach --restart=Never \
-  -i \
+  -it \
   -- sh -c 'exec mysql -hsome.mysql.host -usome-mysql-user -p'
 ```
 
-Or, run `docker` from your shell:
-```shell
-docker run \
-  --name some-mysql-client \
-  --rm \
-  -it \
-  launcher.gcr.io/google/mysql5 \
-  sh -c 'exec mysql -hsome.mysql.host -usome-mysql-user -p'
-```
-
-# Configurations
+## <a name="configurations-kubernetes"></a>Configurations
 
 There are several ways to configure your MySQL service instance.
 
-## Using configuration volume
+### <a name="using-configuration-volume-kubernetes"></a>Using configuration volume
 
 If `/my/custom/path/config-file.cnf` is the path and name of your custom configuration file, you can start your MySQL container like this.
 
-To deploy to your Kubernetes cluster, first create the following `configmap`:
+Create the following `configmap`:
 ```shell
 kubectl create configmap config \
   --from-file=/my/custom/path/config-file.cnf
 ```
 
-Then copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -300,41 +245,19 @@ spec:
         name: config
 ```
 
-Then run the following to expose the port:
+Run the following to expose the port:
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
 ```
 
-Or, use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
-```yaml
-version: '2'
-services:
-  mysql:
-    image: launcher.gcr.io/google/mysql5
-    environment:
-      MYSQL_ROOT_PASSWORD: example-password
-    volumes:
-      - /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
-```
+See [Volume reference](#references-volumes) for more details.
 
-Or, run `docker` from your shell:
-```shell
-docker run \
-  --name some-mysql \
-  -e MYSQL_ROOT_PASSWORD=example-password \
-  -v /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf \
-  -d \
-  launcher.gcr.io/google/mysql5
-```
-
-See [Volume reference](#volumes) for more details.
-
-## Using flags
+### <a name="using-flags-kubernetes"></a>Using flags
 
 You can specify option flags directly to `mysqld` when starting your instance. The following example sets the default encoding and collation for all tables to UTF-8.
 
-To deploy to your Kubernetes cluster, copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -354,13 +277,208 @@ spec:
           value: example-password
 ```
 
-Then run the following to expose the port:
+Run the following to expose the port:
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
 ```
 
-Or, use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+You can also list all available options (several pages long).
+
+```shell
+kubectl run \
+  some-mysql-client \
+  --image launcher.gcr.io/google/mysql5 \
+  --rm --attach --restart=Never \
+  -- --verbose --help
+```
+
+## <a name="maintenance-kubernetes"></a>Maintenance
+
+### <a name="creating-database-dumps-kubernetes"></a>Creating database dumps
+
+All databases can be dumped into a `/some/path/all-databases.sql` file on the host using the following command.
+
+```shell
+kubectl exec -it some-mysql -- sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"' > /some/path/all-databases.sql
+```
+
+# <a name="using-docker"></a>Using Docker
+
+## <a name="running-mysql-server-docker"></a>Running MySQL server
+
+This section describes how to spin up a MySQL service using this image.
+
+### <a name="start-a-mysql-instance-docker"></a>Start a MySQL instance
+
+Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+```yaml
+version: '2'
+services:
+  mysql:
+    image: launcher.gcr.io/google/mysql5
+    environment:
+      MYSQL_ROOT_PASSWORD: example-password
+```
+
+Or you can use `docker run` directly:
+
+```shell
+docker run \
+  --name some-mysql \
+  -e MYSQL_ROOT_PASSWORD=example-password \
+  -d \
+  launcher.gcr.io/google/mysql5
+```
+
+MySQL server is accessible on port 3306.
+
+For information about how to retain your database across restarts, see [Use a persistent data volume](#use-a-persistent-data-volume-docker).
+
+See [Configurations](#configurations-docker) for how to customize your MySQL service instance.
+
+Also see [Securely set up the server](#securely-set-up-the-server-docker) for how to bootstrap the server with a more secure root password, without exposing it on the command line.
+
+### <a name="use-a-persistent-data-volume-docker"></a>Use a persistent data volume
+
+We can store MySQL data on a persistent volume. This way the database remains intact across restarts. Assume that `/my/persistent/dir/mysql` is the persistent directory on the host.
+
+Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+```yaml
+version: '2'
+services:
+  mysql:
+    image: launcher.gcr.io/google/mysql5
+    environment:
+      MYSQL_ROOT_PASSWORD: example-password
+    volumes:
+      - /my/persistent/dir/mysql:/var/lib/mysql
+```
+
+Or you can use `docker run` directly:
+
+```shell
+docker run \
+  --name some-mysql \
+  -e MYSQL_ROOT_PASSWORD=example-password \
+  -v /my/persistent/dir/mysql:/var/lib/mysql \
+  -d \
+  launcher.gcr.io/google/mysql5
+```
+
+Note that once the database directory is established, `MYSQL_ROOT_PASSWORD` will be ignored when the instance restarts.
+
+### <a name="securely-set-up-the-server-docker"></a>Securely set up the server
+
+A recommended way to start up your MySQL server is to have the root password generated as a onetime password. You will then log on and change this password. MySQL will not fully function until this onetime password is changed.
+
+Start the container with both environment variables `MYSQL_RANDOM_ROOT_PASSWORD` and `MYSQL_ONETIME_PASSWORD` set to `yes`.
+
+Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+```yaml
+version: '2'
+services:
+  mysql:
+    image: launcher.gcr.io/google/mysql5
+    environment:
+      MYSQL_ONETIME_PASSWORD: yes
+      MYSQL_RANDOM_ROOT_PASSWORD: yes
+```
+
+Or you can use `docker run` directly:
+
+```shell
+docker run \
+  --name some-mysql \
+  -e MYSQL_ONETIME_PASSWORD=yes \
+  -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
+  -d \
+  launcher.gcr.io/google/mysql5
+```
+
+You can then obtain the generated password by viewing the container log and look for the "GENERATED ROOT PASSWORD" line.
+
+Open a shell to the container.
+
+```shell
+docker exec -it some-mysql bash
+```
+
+Now log in with the generated onetime password.
+```
+mysql -u root -p
+```
+
+Once logged in, you can change the root password.
+```
+ALTER USER root IDENTIFIED BY 'new-password';
+```
+
+Also see [Environment Variable reference](#references-environment-variables) for more information.
+
+## <a name="command-line-mysql-client-docker"></a>Command line MySQL client
+
+This section describes how to use this image as a MySQL client.
+
+### <a name="connect-to-a-running-mysql-container-docker"></a>Connect to a running MySQL container
+
+You can run a MySQL client directly within the container.
+
+```shell
+docker exec -it some-mysql mysql -uroot -p
+```
+
+### <a name="connect-command-line-client-to-a-remote-mysql-instance-docker"></a>Connect command line client to a remote MySQL instance
+
+Assume that we have a MySQL instance running at `some.mysql.host` and we want to log on as `some-mysql-user` when connecting.
+
+```shell
+docker run \
+  --name some-mysql-client \
+  --rm \
+  -it \
+  launcher.gcr.io/google/mysql5 \
+  sh -c 'exec mysql -hsome.mysql.host -usome-mysql-user -p'
+```
+
+## <a name="configurations-docker"></a>Configurations
+
+There are several ways to configure your MySQL service instance.
+
+### <a name="using-configuration-volume-docker"></a>Using configuration volume
+
+If `/my/custom/path/config-file.cnf` is the path and name of your custom configuration file, you can start your MySQL container like this.
+
+Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+```yaml
+version: '2'
+services:
+  mysql:
+    image: launcher.gcr.io/google/mysql5
+    environment:
+      MYSQL_ROOT_PASSWORD: example-password
+    volumes:
+      - /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
+```
+
+Or you can use `docker run` directly:
+
+```shell
+docker run \
+  --name some-mysql \
+  -e MYSQL_ROOT_PASSWORD=example-password \
+  -v /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf \
+  -d \
+  launcher.gcr.io/google/mysql5
+```
+
+See [Volume reference](#references-volumes) for more details.
+
+### <a name="using-flags-docker"></a>Using flags
+
+You can specify option flags directly to `mysqld` when starting your instance. The following example sets the default encoding and collation for all tables to UTF-8.
+
+Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
 ```yaml
 version: '2'
 services:
@@ -373,7 +491,8 @@ services:
       MYSQL_ROOT_PASSWORD: example-password
 ```
 
-Or, run `docker` from your shell:
+Or you can use `docker run` directly:
+
 ```shell
 docker run \
   --name some-mysql \
@@ -385,16 +504,6 @@ docker run \
 
 You can also list all available options (several pages long).
 
-Run `kubectl` from your shell to connect to your Kubernetes cluster.
-```shell
-kubectl run \
-  some-mysql-client \
-  --image launcher.gcr.io/google/mysql5 \
-  --rm --attach --restart=Never \
-  -- --verbose --help
-```
-
-Or, run `docker` from your shell:
 ```shell
 docker run \
   --name some-mysql-client \
@@ -403,25 +512,19 @@ docker run \
   --verbose --help
 ```
 
-# Maintenance
+## <a name="maintenance-docker"></a>Maintenance
 
-## Creating database dumps
+### <a name="creating-database-dumps-docker"></a>Creating database dumps
 
 All databases can be dumped into a `/some/path/all-databases.sql` file on the host using the following command.
 
-Run `kubectl` from your shell to connect to your Kubernetes cluster.
-```shell
-kubectl exec -it some-mysql -- sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"' > /some/path/all-databases.sql
-```
-
-Or, run `docker` from your shell:
 ```shell
 docker exec -it some-mysql sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"' > /some/path/all-databases.sql
 ```
 
-# References
+# <a name="references"></a>References
 
-## Ports
+## <a name="references-ports"></a>Ports
 
 These are the ports exposed by the container image.
 
@@ -429,7 +532,7 @@ These are the ports exposed by the container image.
 |:---------|:----------------|
 | TCP 3306 | Standard MySQL port. |
 
-## Environment Variables
+## <a name="references-environment-variables"></a>Environment Variables
 
 These are the environment variables understood by the container image.
 
@@ -442,7 +545,7 @@ These are the environment variables understood by the container image.
 | MYSQL_RANDOM_ROOT_PASSWORD | If set to `yes`, a random initial password for `root` superuser will be generated. This password will be printed to stdout as `GENERATED ROOT PASSWORD: ...` |
 | MYSQL_ONETIME_PASSWORD | If set to `yes`, the initial password for `root` superuser, be it specified via `MYSQL_ROOT_PASSWORD` or randomly generated (see `MYSQL_RANDOM_ROOT_PASSWORD`), must be changed after startup. |
 
-## Volumes
+## <a name="references-volumes"></a>Volumes
 
 These are the filesystem paths used by the container image.
 
