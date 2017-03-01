@@ -117,6 +117,7 @@ taskGroups:
     instructions:
     - description: >-
         You can run a MySQL client directly within the container.
+        Log on using the password for `root` user.
       exec:
         <<: *BaseExec
         containerName: some-mysql
@@ -135,6 +136,11 @@ taskGroups:
         - -c
         - >-
           'exec mysql -hsome.mysql.host -usome-mysql-user -p'
+    - description: >-
+        You will have to enter the password for `some-mysql-user` to log on,
+        even though there might not be a prompt to enter password due to
+        limitation of `kubectl run --attach`.
+      applicableRuntimes: [KUBERNETES]
 
 - title: Configurations
   description: There are several ways to configure your MySQL service instance.

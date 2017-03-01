@@ -188,7 +188,7 @@ This section describes how to use this image as a MySQL client.
 
 ### <a name="connect-to-a-running-mysql-container-kubernetes"></a>Connect to a running MySQL container
 
-You can run a MySQL client directly within the container.
+You can run a MySQL client directly within the container. Log on using the password for `root` user.
 
 ```shell
 kubectl exec -it some-mysql -- mysql -uroot -p
@@ -206,6 +206,8 @@ kubectl run \
   -it \
   -- sh -c 'exec mysql -hsome.mysql.host -usome-mysql-user -p'
 ```
+
+You will have to enter the password for `some-mysql-user` to log on, even though there might not be a prompt to enter password due to limitation of `kubectl run --attach`.
 
 ## <a name="configurations-kubernetes"></a>Configurations
 
@@ -422,7 +424,7 @@ This section describes how to use this image as a MySQL client.
 
 ### <a name="connect-to-a-running-mysql-container-docker"></a>Connect to a running MySQL container
 
-You can run a MySQL client directly within the container.
+You can run a MySQL client directly within the container. Log on using the password for `root` user.
 
 ```shell
 docker exec -it some-mysql mysql -uroot -p
