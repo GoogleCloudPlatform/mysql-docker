@@ -98,7 +98,7 @@ taskGroups:
     - description: Open a shell to the container.
       exec:
         <<: *BaseExec
-        containerName: some-mysql
+        containerFromRun: *BaseServerRun
         command: bash
         subcommands:
         - description: Now log in with the generated onetime password.
