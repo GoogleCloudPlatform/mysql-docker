@@ -2,7 +2,7 @@ versions:
   - dir: '8.0'
     repo: mysql8
     tags:
-      - 8.0.0
+      - 8.0.1
       - '8.0'
       - '8'
       - latest
@@ -12,7 +12,7 @@ versions:
         version: '1.7'
         gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
       mysql:
-        version: 8.0.0-dmr-1debian8
+        version: 8.0.1-dmr-1debian8
         major: '8.0'
         gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
   - dir: '5/5.7'
