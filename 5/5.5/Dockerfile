@@ -32,43 +32,30 @@ RUN mkdir /docker-entrypoint-initdb.d
 RUN apt-get update && apt-get install -y libaio1 perl pwgen --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 ENV MYSQL_MAJOR 5.5
-ENV MYSQL_VERSION 5.5.54
+ENV MYSQL_VERSION 5.5.55
 
-RUN apt-get update && apt-get install -y ca-certificates wget --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	&& wget "https://cdn.mysql.com/Downloads/MySQL-$MYSQL_MAJOR/mysql-$MYSQL_VERSION-linux2.6-x86_64.tar.gz" -O mysql.tar.gz \
-	&& wget "https://cdn.mysql.com/Downloads/MySQL-$MYSQL_MAJOR/mysql-$MYSQL_VERSION-linux2.6-x86_64.tar.gz.asc" -O mysql.tar.gz.asc \
-	&& apt-get purge -y --auto-remove ca-certificates wget \
-	&& export GNUPGHOME="$(mktemp -d)" \
+
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5 \
-	&& gpg --batch --verify mysql.tar.gz.asc mysql.tar.gz \
-	&& rm -r "$GNUPGHOME" mysql.tar.gz.asc \
-	&& mkdir /usr/local/mysql \
-	&& tar -xzf mysql.tar.gz -C /usr/local/mysql --strip-components=1 \
-	&& rm mysql.tar.gz \
-	&& rm -rf /usr/local/mysql/mysql-test /usr/local/mysql/sql-bench \
-	&& rm -rf /usr/local/mysql/bin/*-debug /usr/local/mysql/bin/*_embedded \
-	&& find /usr/local/mysql -type f -name "*.a" -delete \
-	&& apt-get update && apt-get install -y binutils && rm -rf /var/lib/apt/lists/* \
-	&& { find /usr/local/mysql -type f -executable -exec strip --strip-all '{}' + || true; } \
-	&& apt-get purge -y --auto-remove binutils
-ENV PATH $PATH:/usr/local/mysql/bin:/usr/local/mysql/scripts
+RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys A4A9406876FCBD3C456770C88C718D3B5072E1F5
 
-# replicate some of the way the APT package configuration works
-# this is only for 5.5 since it doesn't have an APT repo, and will go away when 5.5 does
-RUN mkdir -p /etc/mysql/conf.d \
-	&& { \
-		echo '[mysqld]'; \
-		echo 'skip-host-cache'; \
-		echo 'skip-name-resolve'; \
-		echo 'datadir = /var/lib/mysql'; \
-		echo '!includedir /etc/mysql/conf.d/'; \
-	} > /etc/mysql/my.cnf
+RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
-RUN mkdir -p /var/lib/mysql /var/run/mysqld \
+# the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
+# also, we set debconf keys to make APT a little quieter
+RUN { \
+		echo mysql-community-server mysql-community-server/data-dir select ''; \
+		echo mysql-community-server mysql-community-server/root-pass password ''; \
+		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
+		echo mysql-community-server mysql-community-server/remove-test-db select false; \
+	} | debconf-set-selections \
+	&& apt-get update && apt-get install -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
 # ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 	&& chmod 777 /var/run/mysqld
+
+# comment out a few problematic configuration values
+# don't reverse lookup hostnames, they are usually another container
 
 VOLUME /var/lib/mysql
 

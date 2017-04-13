@@ -32,7 +32,7 @@ RUN mkdir /docker-entrypoint-initdb.d
 RUN apt-get update && apt-get install -y libaio1 perl pwgen --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 ENV MYSQL_MAJOR 5.6
-ENV MYSQL_VERSION 5.6.35-1debian8
+ENV MYSQL_VERSION 5.6.36-1debian8
 
 
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
@@ -56,8 +56,6 @@ RUN { \
 
 # comment out a few problematic configuration values
 # don't reverse lookup hostnames, they are usually another container
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
-	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
 
 VOLUME /var/lib/mysql
 
