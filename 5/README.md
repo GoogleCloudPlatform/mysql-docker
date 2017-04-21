@@ -65,8 +65,8 @@ spec:
     - image: launcher.gcr.io/google/mysql5
       name: mysql
       env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: example-password
+        - name: "MYSQL_ROOT_PASSWORD"
+          value: "example-password"
 ```
 
 Run the following to expose the port:
@@ -98,8 +98,8 @@ spec:
     - image: launcher.gcr.io/google/mysql5
       name: mysql
       env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: example-password
+        - name: "MYSQL_ROOT_PASSWORD"
+          value: "example-password"
       volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
@@ -150,10 +150,10 @@ spec:
     - image: launcher.gcr.io/google/mysql5
       name: mysql
       env:
-        - name: MYSQL_ONETIME_PASSWORD
-          value: yes
-        - name: MYSQL_RANDOM_ROOT_PASSWORD
-          value: yes
+        - name: "MYSQL_ONETIME_PASSWORD"
+          value: "yes"
+        - name: "MYSQL_RANDOM_ROOT_PASSWORD"
+          value: "yes"
 ```
 
 Run the following to expose the port:
@@ -236,8 +236,8 @@ spec:
     - image: launcher.gcr.io/google/mysql5
       name: mysql
       env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: example-password
+        - name: "MYSQL_ROOT_PASSWORD"
+          value: "example-password"
       volumeMounts:
         - name: config
           mountPath: /etc/mysql/conf.d
@@ -275,8 +275,8 @@ spec:
         - --character-set-server=utf8mb4
         - --collation-server=utf8mb4_unicode_ci
       env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: example-password
+        - name: "MYSQL_ROOT_PASSWORD"
+          value: "example-password"
 ```
 
 Run the following to expose the port:
@@ -305,6 +305,8 @@ All databases can be dumped into a `/some/path/all-databases.sql` file on the ho
 kubectl exec -it some-mysql -- sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"' > /some/path/all-databases.sql
 ```
 
+If your container was not started with a `MYSQL_ROOT_PASSWORD` value, substitute `"$MYSQL_ROOT_PASSWORD"` with the password of the root user. Alternatively, you can use another pair of username as password for `-u` and `-p` arguments.
+
 # <a name="using-docker"></a>Using Docker
 
 ## <a name="running-mysql-server-docker"></a>Running MySQL server
@@ -321,7 +323,7 @@ services:
     container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
-      MYSQL_ROOT_PASSWORD: example-password
+      "MYSQL_ROOT_PASSWORD": "example-password"
 ```
 
 Or you can use `docker run` directly:
@@ -329,7 +331,7 @@ Or you can use `docker run` directly:
 ```shell
 docker run \
   --name some-mysql \
-  -e MYSQL_ROOT_PASSWORD=example-password \
+  -e "MYSQL_ROOT_PASSWORD=example-password" \
   -d \
   launcher.gcr.io/google/mysql5
 ```
@@ -354,7 +356,7 @@ services:
     container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
-      MYSQL_ROOT_PASSWORD: example-password
+      "MYSQL_ROOT_PASSWORD": "example-password"
     volumes:
       - /my/persistent/dir/mysql:/var/lib/mysql
 ```
@@ -364,7 +366,7 @@ Or you can use `docker run` directly:
 ```shell
 docker run \
   --name some-mysql \
-  -e MYSQL_ROOT_PASSWORD=example-password \
+  -e "MYSQL_ROOT_PASSWORD=example-password" \
   -v /my/persistent/dir/mysql:/var/lib/mysql \
   -d \
   launcher.gcr.io/google/mysql5
@@ -386,8 +388,8 @@ services:
     container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
-      MYSQL_ONETIME_PASSWORD: yes
-      MYSQL_RANDOM_ROOT_PASSWORD: yes
+      "MYSQL_ONETIME_PASSWORD": "yes"
+      "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
 ```
 
 Or you can use `docker run` directly:
@@ -395,8 +397,8 @@ Or you can use `docker run` directly:
 ```shell
 docker run \
   --name some-mysql \
-  -e MYSQL_ONETIME_PASSWORD=yes \
-  -e MYSQL_RANDOM_ROOT_PASSWORD=yes \
+  -e "MYSQL_ONETIME_PASSWORD=yes" \
+  -e "MYSQL_RANDOM_ROOT_PASSWORD=yes" \
   -d \
   launcher.gcr.io/google/mysql5
 ```
@@ -462,7 +464,7 @@ services:
     container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
-      MYSQL_ROOT_PASSWORD: example-password
+      "MYSQL_ROOT_PASSWORD": "example-password"
     volumes:
       - /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
 ```
@@ -472,7 +474,7 @@ Or you can use `docker run` directly:
 ```shell
 docker run \
   --name some-mysql \
-  -e MYSQL_ROOT_PASSWORD=example-password \
+  -e "MYSQL_ROOT_PASSWORD=example-password" \
   -v /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf \
   -d \
   launcher.gcr.io/google/mysql5
@@ -495,7 +497,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
     environment:
-      MYSQL_ROOT_PASSWORD: example-password
+      "MYSQL_ROOT_PASSWORD": "example-password"
 ```
 
 Or you can use `docker run` directly:
@@ -503,7 +505,7 @@ Or you can use `docker run` directly:
 ```shell
 docker run \
   --name some-mysql \
-  -e MYSQL_ROOT_PASSWORD=example-password \
+  -e "MYSQL_ROOT_PASSWORD=example-password" \
   -d \
   launcher.gcr.io/google/mysql5 \
   --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
@@ -528,6 +530,8 @@ All databases can be dumped into a `/some/path/all-databases.sql` file on the ho
 ```shell
 docker exec -it some-mysql sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"' > /some/path/all-databases.sql
 ```
+
+If your container was not started with a `MYSQL_ROOT_PASSWORD` value, substitute `"$MYSQL_ROOT_PASSWORD"` with the password of the root user. Alternatively, you can use another pair of username as password for `-u` and `-p` arguments.
 
 # <a name="references"></a>References
 
