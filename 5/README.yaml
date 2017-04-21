@@ -191,6 +191,11 @@ taskGroups:
         containerName: some-mysql
         command: sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"'
         redirectOutputTo: /some/path/all-databases.sql
+    - description: >-
+        If your container was not started with a `MYSQL_ROOT_PASSWORD` value,
+        substitute `"$MYSQL_ROOT_PASSWORD"` with the password of the root user.
+        Alternatively, you can use another pair of username as password for
+        `-u` and `-p` arguments.
 
 portReference:
   ports:
