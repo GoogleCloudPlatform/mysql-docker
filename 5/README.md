@@ -240,7 +240,7 @@ spec:
           value: example-password
       volumeMounts:
         - name: config
-          mountPath: /etc/mysql/conf.d/config-file.cnf
+          mountPath: /etc/mysql/conf.d
   volumes:
     - name: config
       configMap:
@@ -318,6 +318,7 @@ Use the following content for the `docker-compose.yml` file, then run `docker-co
 version: '2'
 services:
   mysql:
+    container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
       MYSQL_ROOT_PASSWORD: example-password
@@ -350,6 +351,7 @@ Use the following content for the `docker-compose.yml` file, then run `docker-co
 version: '2'
 services:
   mysql:
+    container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
       MYSQL_ROOT_PASSWORD: example-password
@@ -381,6 +383,7 @@ Use the following content for the `docker-compose.yml` file, then run `docker-co
 version: '2'
 services:
   mysql:
+    container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
       MYSQL_ONETIME_PASSWORD: yes
@@ -456,6 +459,7 @@ Use the following content for the `docker-compose.yml` file, then run `docker-co
 version: '2'
 services:
   mysql:
+    container_name: some-mysql
     image: launcher.gcr.io/google/mysql5
     environment:
       MYSQL_ROOT_PASSWORD: example-password
@@ -485,6 +489,7 @@ Use the following content for the `docker-compose.yml` file, then run `docker-co
 version: '2'
 services:
   mysql:
+    container_name: some-mysql
     image: launcher.gcr.io/google/mysql5 \
     command:
       - --character-set-server=utf8mb4
