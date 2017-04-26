@@ -1,0 +1,17 @@
+setup:
+- command: [docker, run, --privileged=true, --name, some-mysql, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, '$IMAGE']
+- command: [sleep, 30s]
+
+teardown:
+- command: [docker, stop, some-mysql]
+- command: [docker, rm, some-mysql]
+
+target: some-mysql
+tests:
+- name: Create a database
+  command: [mysql, -u, root, --password=example-password, -e, 'CREATE DATABASE exampledb']
+- name: Show databases
+  command: [mysql, -u, root, --password=example-password, -e, 'SHOW DATABASES']
+  expect:
+    stdout:
+      matches: exampledb
