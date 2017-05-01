@@ -41,7 +41,7 @@ overview:
 
     For more information, see the
     [Official Image Launcher Page](https://console.cloud.google.com/launcher/details/google/mysql5).
-  dockerfileUrl: https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/5/5.7
+  dockerfileUrl: https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/5
   pullCommand: *PullCommand
 
 taskGroups:
