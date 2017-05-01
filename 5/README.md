@@ -6,11 +6,12 @@ For more information, see the
 [Official Image Launcher Page](https://console.cloud.google.com/launcher/details/google/mysql5).
 
 Pull command:
+
 ```shell
 gcloud docker -- pull launcher.gcr.io/google/mysql5
 ```
 
-Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/5/5.7).
+Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/5).
 
 # <a name="table-of-contents"></a>Table of Contents
 * [Using Kubernetes](#using-kubernetes)
@@ -53,6 +54,7 @@ This section describes how to spin up a MySQL service using this image.
 ### <a name="start-a-mysql-instance-kubernetes"></a>Start a MySQL instance
 
 Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -70,6 +72,7 @@ spec:
 ```
 
 Run the following to expose the port:
+
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
@@ -86,6 +89,7 @@ Also see [Securely set up the server](#securely-set-up-the-server-kubernetes) fo
 We can store MySQL data on a persistent volume. This way the database remains intact across restarts.
 
 Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -124,6 +128,7 @@ spec:
 ```
 
 Run the following to expose the port:
+
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
@@ -138,6 +143,7 @@ A recommended way to start up your MySQL server is to have the root password gen
 Start the container with both environment variables `MYSQL_RANDOM_ROOT_PASSWORD` and `MYSQL_ONETIME_PASSWORD` set to `yes`.
 
 Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -157,6 +163,7 @@ spec:
 ```
 
 Run the following to expose the port:
+
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
@@ -171,11 +178,13 @@ kubectl exec -it some-mysql -- bash
 ```
 
 Now log in with the generated onetime password.
+
 ```
 mysql -u root -p
 ```
 
 Once logged in, you can change the root password.
+
 ```
 ALTER USER root IDENTIFIED BY 'new-password';
 ```
@@ -218,12 +227,14 @@ There are several ways to configure your MySQL service instance.
 If `/my/custom/path/config-file.cnf` is the path and name of your custom configuration file, you can start your MySQL container like this.
 
 Create the following `configmap`:
+
 ```shell
 kubectl create configmap config \
   --from-file=/my/custom/path/config-file.cnf
 ```
 
 Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -248,6 +259,7 @@ spec:
 ```
 
 Run the following to expose the port:
+
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
@@ -260,6 +272,7 @@ See [Volume reference](#references-volumes) for more details.
 You can specify option flags directly to `mysqld` when starting your instance. The following example sets the default encoding and collation for all tables to UTF-8.
 
 Copy the following content to `pod.yaml` file, and run `kubectl create -f pod.yaml`.
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -280,6 +293,7 @@ spec:
 ```
 
 Run the following to expose the port:
+
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
   --type LoadBalancer --port 3306 --protocol TCP
@@ -316,6 +330,7 @@ This section describes how to spin up a MySQL service using this image.
 ### <a name="start-a-mysql-instance-docker"></a>Start a MySQL instance
 
 Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+
 ```yaml
 version: '2'
 services:
@@ -349,6 +364,7 @@ Also see [Securely set up the server](#securely-set-up-the-server-docker) for ho
 We can store MySQL data on a persistent volume. This way the database remains intact across restarts. Assume that `/my/persistent/dir/mysql` is the persistent directory on the host.
 
 Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+
 ```yaml
 version: '2'
 services:
@@ -381,6 +397,7 @@ A recommended way to start up your MySQL server is to have the root password gen
 Start the container with both environment variables `MYSQL_RANDOM_ROOT_PASSWORD` and `MYSQL_ONETIME_PASSWORD` set to `yes`.
 
 Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+
 ```yaml
 version: '2'
 services:
@@ -412,11 +429,13 @@ docker exec -it some-mysql bash
 ```
 
 Now log in with the generated onetime password.
+
 ```
 mysql -u root -p
 ```
 
 Once logged in, you can change the root password.
+
 ```
 ALTER USER root IDENTIFIED BY 'new-password';
 ```
@@ -457,6 +476,7 @@ There are several ways to configure your MySQL service instance.
 If `/my/custom/path/config-file.cnf` is the path and name of your custom configuration file, you can start your MySQL container like this.
 
 Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+
 ```yaml
 version: '2'
 services:
@@ -487,6 +507,7 @@ See [Volume reference](#references-volumes) for more details.
 You can specify option flags directly to `mysqld` when starting your instance. The following example sets the default encoding and collation for all tables to UTF-8.
 
 Use the following content for the `docker-compose.yml` file, then run `docker-compose up`.
+
 ```yaml
 version: '2'
 services:
