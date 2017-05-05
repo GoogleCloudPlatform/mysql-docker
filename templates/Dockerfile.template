@@ -16,7 +16,7 @@ RUN set -x \
 	&& rm gosu.tar.gz \
 # extract gosu binary and check signature
 	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys {{ $gosu.Gpg }} \
+	&& gpg --keyserver pgp.mit.edu --recv-keys {{ $gosu.Gpg }} \
 	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
 	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
 	&& chmod +x /usr/local/bin/gosu \
@@ -43,7 +43,7 @@ RUN apt-get update && apt-get install -y ca-certificates wget --no-install-recom
 	&& apt-get purge -y --auto-remove ca-certificates wget \
 	&& export GNUPGHOME="$(mktemp -d)" \
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys {{ $mysql.Gpg }} \
+	&& gpg --keyserver pgp.mit.edu --recv-keys {{ $mysql.Gpg }} \
 	&& gpg --batch --verify mysql.tar.gz.asc mysql.tar.gz \
 	&& rm -r "$GNUPGHOME" mysql.tar.gz.asc \
 	&& mkdir /usr/local/mysql \
@@ -75,7 +75,7 @@ RUN mkdir -p /var/lib/mysql /var/run/mysqld \
 {{- end }}
 {{- if (ne .Dir "5.5") }}
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys {{ $mysql.Gpg }}
+RUN apt-key adv --keyserver pgp.mit.edu --recv-keys {{ $mysql.Gpg }}
 
 RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
