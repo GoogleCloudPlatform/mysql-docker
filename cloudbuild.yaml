@@ -1,0 +1,98 @@
+
+steps:
+
+# Build images
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - 'build'
+      - '--tag=gcr.io/$PROJECT_ID/mysql8:8.0.0'
+      - '8.0'
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - 'build'
+      - '--tag=gcr.io/$PROJECT_ID/mysql5:5.7.17'
+      - '5/5.7'
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - 'build'
+      - '--tag=gcr.io/$PROJECT_ID/mysql5:5.6.35'
+      - '5/5.6'
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - 'build'
+      - '--tag=gcr.io/$PROJECT_ID/mysql5:5.5.54'
+      - '5/5.5'
+
+# Run tests
+  - name: gcr.io/gcp-runtimes/structure_test
+    args:
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/mysql8:8.0.0'
+      - '--config'
+      - '/workspace/tests/security_test.json'
+  - name: gcr.io/gcp-runtimes/structure_test
+    args:
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/mysql5:5.7.17'
+      - '--config'
+      - '/workspace/tests/security_test.json'
+  - name: gcr.io/gcp-runtimes/structure_test
+    args:
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/mysql5:5.6.35'
+      - '--config'
+      - '/workspace/tests/security_test.json'
+  - name: gcr.io/gcp-runtimes/structure_test
+    args:
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/mysql5:5.5.54'
+      - '--config'
+      - '/workspace/tests/security_test.json'
+
+# Add alias tags
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql8:8.0.0'
+      - 'gcr.io/$PROJECT_ID/mysql8:8.0'
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql8:8.0.0'
+      - 'gcr.io/$PROJECT_ID/mysql8:8'
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql8:8.0.0'
+      - 'gcr.io/$PROJECT_ID/mysql8:latest'
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql5:5.7.17'
+      - 'gcr.io/$PROJECT_ID/mysql5:5.7'
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql5:5.7.17'
+      - 'gcr.io/$PROJECT_ID/mysql5:5'
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql5:5.7.17'
+      - 'gcr.io/$PROJECT_ID/mysql5:latest'
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql5:5.6.35'
+      - 'gcr.io/$PROJECT_ID/mysql5:5.6'
+  - name: gcr.io/cloud-builders/retagger
+    args:
+      - 'gcr.io/$PROJECT_ID/mysql5:5.5.54'
+      - 'gcr.io/$PROJECT_ID/mysql5:5.5'
+
+images:
+  - 'gcr.io/$PROJECT_ID/mysql8:8.0.0'
+  - 'gcr.io/$PROJECT_ID/mysql8:8.0'
+  - 'gcr.io/$PROJECT_ID/mysql8:8'
+  - 'gcr.io/$PROJECT_ID/mysql8:latest'
+  - 'gcr.io/$PROJECT_ID/mysql5:5.7.17'
+  - 'gcr.io/$PROJECT_ID/mysql5:5.7'
+  - 'gcr.io/$PROJECT_ID/mysql5:5'
+  - 'gcr.io/$PROJECT_ID/mysql5:latest'
+  - 'gcr.io/$PROJECT_ID/mysql5:5.6.35'
+  - 'gcr.io/$PROJECT_ID/mysql5:5.6'
+  - 'gcr.io/$PROJECT_ID/mysql5:5.5.54'
+  - 'gcr.io/$PROJECT_ID/mysql5:5.5'
