@@ -15,7 +15,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 versions:
-  - dir: '8.0'
+  - dir: '8/8.0'
     repo: mysql8
     tags:
       - 8.0.1
