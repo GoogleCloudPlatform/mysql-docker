@@ -15,19 +15,21 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 setup:
-- command: [docker, run, --name, some-mysql, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, '$IMAGE']
+- command: [docker, network, create, -d, bridge, testbridge]
+- command: [docker, run, --net, testbridge, --name, some-mysql, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, '$IMAGE']
 - command: [sleep, 30s]
+- command: [docker, run, --net, testbridge, --name, some-mysql-client, -d, '$IMAGE', sh, -c, 'sleep 320']
 
 teardown:
 - command: [docker, stop, some-mysql]
 - command: [docker, rm, some-mysql]
+- command: [docker, rm, -f, some-mysql-client]
+- command: [docker, network, rm, testbridge]
 
-target: some-mysql
+target: some-mysql-client
 tests:
-- name: Create a database
-  command: [mysql, -uroot, -pexample-password, -e, 'CREATE DATABASE exampledb']
-- name: Show databases
-  command: [mysql, -uroot, -pexample-password, -e, 'SHOW DATABASES']
+- name: Can connect to remote container
+  command: [mysql, -hsome-mysql, -uroot, -pexample-password, -e, 'SHOW DATABASES']
   expect:
     stdout:
-      matches: exampledb
+      matches: mysql
