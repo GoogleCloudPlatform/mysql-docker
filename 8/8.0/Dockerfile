@@ -1,5 +1,8 @@
 FROM gcr.io/google-appengine/debian8
 
+# Get the list of packages from the base image.
+RUN dpkg-query -W '-f=${binary:Package}\n' > /usr/local/src/packages.list
+
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
@@ -10,9 +13,7 @@ RUN set -x \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
 # copy source /usr/local/src OSS compliance
-        && wget -O gosu.tar.gz "https://github.com/tianon/gosu/archive/$GOSU_VERSION.tar.gz" \
-	&& tar -xvf gosu.tar.gz -C /usr/local/src \
-	&& rm gosu.tar.gz \
+	&& wget -O /usr/local/src/gosu.tar.gz "https://github.com/tianon/gosu/archive/$GOSU_VERSION.tar.gz" \
 # extract gosu binary and check signature
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
@@ -76,3 +77,11 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306
 CMD ["mysqld"]
+
+# Download source code for GPL packages.
+RUN echo "deb-src http://deb.debian.org/debian/ jessie main" >> /etc/apt/sources.list \
+	&& echo "deb-src http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" >> /etc/apt/sources.list \
+	&& apt-get update
+COPY download_source /usr/local/src/
+RUN /usr/local/src/download_source
+RUN rm /etc/apt/sources.list && rm /usr/local/src/download_source
