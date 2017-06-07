@@ -1,0 +1,36 @@
+#!/bin/bash -e
+#
+# Copyright (C) 2017 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+SCRIPT_DIR=$(readlink -f $(dirname "${BASH_SOURCE[0]}"))
+cd "$SCRIPT_DIR"
+touch packages.list
+
+PACKAGES=($(comm -13 \
+  <(sort packages.list) \
+  <(dpkg-query -W '-f=${binary:Package}\n' | sort) \
+  | cut -d ":" -f 1))
+GPL_PACKAGES=($(for PKG in ${PACKAGES[@]}; do \
+  if egrep -q '\WGPL\W' "/usr/share/doc/$PKG/copyright"; then echo "$PKG"; fi \
+  done))
+
+for PKG in ${GPL_PACKAGES[@]}; do
+  echo "--> Downloading source code for GPL package $PKG..."
+  apt-get source -q -d "$PKG" || echo "--> No source found for package $PKG"
+done
+
+rm packages.list
