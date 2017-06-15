@@ -1,7 +1,8 @@
 FROM gcr.io/google-appengine/debian8
 
 # Get the list of packages from the base image.
-RUN dpkg-query -W '-f=${binary:Package}\n' > /usr/local/src/packages.list
+COPY download_source /tmp
+RUN /tmp/download_source blacklist-all-current
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
@@ -79,9 +80,5 @@ EXPOSE 3306
 CMD ["mysqld"]
 
 # Download source code for GPL packages.
-RUN echo "deb-src http://deb.debian.org/debian/ jessie main" >> /etc/apt/sources.list \
-	&& echo "deb-src http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" >> /etc/apt/sources.list \
-	&& apt-get update
-COPY download_source /usr/local/src/
-RUN /usr/local/src/download_source
-RUN rm /etc/apt/sources.list && rm /usr/local/src/download_source
+RUN /tmp/download_source download /usr/local/src
+RUN rm /tmp/download_source
