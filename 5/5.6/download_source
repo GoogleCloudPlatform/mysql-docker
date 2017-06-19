@@ -27,10 +27,8 @@ function list_packages() {
 }
 
 function list_gpl_packages() {
-  for pkg in $(list_packages)
-  do
-    if egrep -q '\WGPL\W' "/usr/share/doc/${pkg}/copyright"
-    then
+  for pkg in $(list_packages); do
+    if egrep -q '\WGPL\W' "/usr/share/doc/${pkg}/copyright"; then
       echo "${pkg}"
     fi
   done
@@ -41,22 +39,20 @@ function blacklist_all_current() {
 }
 
 function blacklist_nothing() {
-  echo -n > "${BLACKLIST_FILE}"
+  cat /dev/null > "${BLACKLIST_FILE}"
 }
 
 function blacklist() {
-  for pkg in $@
-  do
+  for pkg in $@; do
     echo "${pkg}" >> "${BLACKLIST_FILE}"
   done
 }
 
 function download_source_code() {
-  target_dir="$1"
-  readonly SRC_LIST_FILE="/etc/apt/sources.list.d/all-src.list"
+  local -r target_dir="$1"
+  local -r src_list_file="/etc/apt/sources.list.d/all-src.list"
 
-  if ! [[ -e "${BLACKLIST_FILE}" ]]
-  then
+  if ! [[ -e "${BLACKLIST_FILE}" ]]; then
     echo "No package blacklist found. This might download a lot of code."
     echo "If it is really desired, run with argument 'blacklist-nothing' first."
     exit 1
@@ -65,17 +61,16 @@ function download_source_code() {
   # Add all current deb sources as deb-src.
   cat /etc/apt/sources.list /etc/apt/sources.list.d/* \
     | sed 's/^deb /deb-src /g' | sort | uniq \
-    > "$SRC_LIST_FILE"
+    > "${src_list_file}"
   apt-get update
 
   cd "${target_dir}"
-  for pkg in $(list_gpl_packages)
-  do
+  for pkg in $(list_gpl_packages); do
     echo "--> Downloading source code for GPL package ${pkg}..."
     apt-get source -q -d "${pkg}"
   done
 
-  rm "${SRC_LIST_FILE}" "${BLACKLIST_FILE}"
+  rm "${src_list_file}" "${BLACKLIST_FILE}"
   apt-get update
 }
 

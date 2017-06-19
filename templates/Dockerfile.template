@@ -129,5 +129,5 @@ EXPOSE 3306
 CMD ["mysqld"]
 
 # Download source code for GPL packages.
-RUN /tmp/download_source download /usr/local/src
-RUN rm /tmp/download_source
+RUN /tmp/download_source download /usr/local/src \
+	&& rm /tmp/download_source
