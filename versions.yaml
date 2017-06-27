@@ -18,7 +18,7 @@ versions:
   - dir: '8/8.0'
     repo: mysql8
     tags:
-      - 8.0.1
+      - '8.0.1'
       - '8.0'
       - '8'
       - latest
@@ -34,7 +34,7 @@ versions:
   - dir: '5/5.7'
     repo: mysql5
     tags:
-      - 5.7.18
+      - '5.7.18'
       - '5.7'
       - '5'
       - latest
@@ -48,7 +48,7 @@ versions:
   - dir: '5/5.6'
     repo: mysql5
     tags:
-      - 5.6.36
+      - '5.6.36'
       - '5.6'
     from: *from
     packages:
