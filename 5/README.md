@@ -339,6 +339,8 @@ services:
     image: launcher.gcr.io/google/mysql5
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
 ```
 
 Or you can use `docker run` directly:
@@ -347,6 +349,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -d \
   launcher.gcr.io/google/mysql5
 ```
@@ -373,6 +376,8 @@ services:
     image: launcher.gcr.io/google/mysql5
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
     volumes:
       - /my/persistent/dir/mysql:/var/lib/mysql
 ```
@@ -383,6 +388,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -v /my/persistent/dir/mysql:/var/lib/mysql \
   -d \
   launcher.gcr.io/google/mysql5
@@ -407,6 +413,8 @@ services:
     environment:
       "MYSQL_ONETIME_PASSWORD": "yes"
       "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
+    ports:
+      - '3306:3306'
 ```
 
 Or you can use `docker run` directly:
@@ -416,6 +424,7 @@ docker run \
   --name some-mysql \
   -e "MYSQL_ONETIME_PASSWORD=yes" \
   -e "MYSQL_RANDOM_ROOT_PASSWORD=yes" \
+  -p 3306:3306 \
   -d \
   launcher.gcr.io/google/mysql5
 ```
@@ -485,6 +494,8 @@ services:
     image: launcher.gcr.io/google/mysql5
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
     volumes:
       - /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
 ```
@@ -495,6 +506,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -v /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf \
   -d \
   launcher.gcr.io/google/mysql5
@@ -519,6 +531,8 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
 ```
 
 Or you can use `docker run` directly:
@@ -527,6 +541,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -d \
   launcher.gcr.io/google/mysql5 \
   --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
