@@ -5,7 +5,7 @@ This image contains an installation MySQL 5.x.
 For more information, see the
 [Official Image Launcher Page](https://console.cloud.google.com/launcher/details/google/mysql5).
 
-Pull command:
+Pull command (first install [gcloud](https://cloud.google.com/sdk/downloads)):
 
 ```shell
 gcloud docker -- pull launcher.gcr.io/google/mysql5
@@ -47,6 +47,9 @@ Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlat
 
 # <a name="using-kubernetes"></a>Using Kubernetes
 
+Consult [Launcher container documentation](https://cloud.google.com/launcher/docs/launcher-container)
+for additional information about setting up your Kubernetes environment.
+
 ## <a name="running-mysql-server-kubernetes"></a>Running MySQL server
 
 This section describes how to spin up a MySQL service using this image.
@@ -71,7 +74,10 @@ spec:
           value: "example-password"
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -127,7 +133,10 @@ spec:
       storage: 5Gi
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -162,7 +171,10 @@ spec:
           value: "yes"
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -258,7 +270,10 @@ spec:
         name: config
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -292,7 +307,10 @@ spec:
           value: "example-password"
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -323,6 +341,9 @@ If your container was not started with a `MYSQL_ROOT_PASSWORD` value, substitute
 
 # <a name="using-docker"></a>Using Docker
 
+Consult [Launcher container documentation](https://cloud.google.com/launcher/docs/launcher-container)
+for additional information about setting up your Docker environment.
+
 ## <a name="running-mysql-server-docker"></a>Running MySQL server
 
 This section describes how to spin up a MySQL service using this image.
@@ -339,6 +360,8 @@ services:
     image: launcher.gcr.io/google/mysql5
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
 ```
 
 Or you can use `docker run` directly:
@@ -347,6 +370,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -d \
   launcher.gcr.io/google/mysql5
 ```
@@ -373,6 +397,8 @@ services:
     image: launcher.gcr.io/google/mysql5
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
     volumes:
       - /my/persistent/dir/mysql:/var/lib/mysql
 ```
@@ -383,6 +409,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -v /my/persistent/dir/mysql:/var/lib/mysql \
   -d \
   launcher.gcr.io/google/mysql5
@@ -407,6 +434,8 @@ services:
     environment:
       "MYSQL_ONETIME_PASSWORD": "yes"
       "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
+    ports:
+      - '3306:3306'
 ```
 
 Or you can use `docker run` directly:
@@ -416,6 +445,7 @@ docker run \
   --name some-mysql \
   -e "MYSQL_ONETIME_PASSWORD=yes" \
   -e "MYSQL_RANDOM_ROOT_PASSWORD=yes" \
+  -p 3306:3306 \
   -d \
   launcher.gcr.io/google/mysql5
 ```
@@ -485,6 +515,8 @@ services:
     image: launcher.gcr.io/google/mysql5
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
     volumes:
       - /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf
 ```
@@ -495,6 +527,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -v /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf \
   -d \
   launcher.gcr.io/google/mysql5
@@ -519,6 +552,8 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
+    ports:
+      - '3306:3306'
 ```
 
 Or you can use `docker run` directly:
@@ -527,6 +562,7 @@ Or you can use `docker run` directly:
 docker run \
   --name some-mysql \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
+  -p 3306:3306 \
   -d \
   launcher.gcr.io/google/mysql5 \
   --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
