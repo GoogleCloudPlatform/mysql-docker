@@ -5,7 +5,7 @@ This image contains an installation MySQL 5.x.
 For more information, see the
 [Official Image Launcher Page](https://console.cloud.google.com/launcher/details/google/mysql5).
 
-Pull command:
+Pull command (first install [gcloud](https://cloud.google.com/sdk/downloads)):
 
 ```shell
 gcloud docker -- pull launcher.gcr.io/google/mysql5
@@ -47,6 +47,9 @@ Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlat
 
 # <a name="using-kubernetes"></a>Using Kubernetes
 
+Consult [Launcher container documentation](https://cloud.google.com/launcher/docs/launcher-container)
+for additional information about setting up your Kubernetes environment.
+
 ## <a name="running-mysql-server-kubernetes"></a>Running MySQL server
 
 This section describes how to spin up a MySQL service using this image.
@@ -71,7 +74,10 @@ spec:
           value: "example-password"
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -127,7 +133,10 @@ spec:
       storage: 5Gi
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -162,7 +171,10 @@ spec:
           value: "yes"
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -258,7 +270,10 @@ spec:
         name: config
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -292,7 +307,10 @@ spec:
           value: "example-password"
 ```
 
-Run the following to expose the port:
+Run the following to expose the port.
+Depending on your cluster setup, this might expose your service to the
+Internet with an external IP address. For more information, consult
+[Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/).
 
 ```shell
 kubectl expose pod some-mysql --name some-mysql-3306 \
@@ -322,6 +340,9 @@ kubectl exec -it some-mysql -- sh -c 'exec mysqldump --all-databases -uroot -p"$
 If your container was not started with a `MYSQL_ROOT_PASSWORD` value, substitute `"$MYSQL_ROOT_PASSWORD"` with the password of the root user. Alternatively, you can use another pair of username as password for `-u` and `-p` arguments.
 
 # <a name="using-docker"></a>Using Docker
+
+Consult [Launcher container documentation](https://cloud.google.com/launcher/docs/launcher-container)
+for additional information about setting up your Docker environment.
 
 ## <a name="running-mysql-server-docker"></a>Running MySQL server
 
