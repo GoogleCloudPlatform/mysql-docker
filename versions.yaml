@@ -25,14 +25,14 @@ versions:
   - dir: '8/8.0'
     repo: mysql8
     tags:
-      - '8.0.2'
+      - '8.0.3'
       - '8.0'
       - 'latest'
     from: *from
     packages:
       gosu: *gosu
       mysql:
-        version: 8.0.2-dmr-1debian8
+        version: 8.0.3-rc-1debian8
         major: '8.0'
         gpg: *gpg
   - dir: '5/5.7'
