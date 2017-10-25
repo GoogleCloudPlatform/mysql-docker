@@ -16,20 +16,19 @@
 
 setup:
 - command: [docker, network, create, -d, bridge, testbridge]
-- command: [docker, run, --net, testbridge, --name, some-mysql, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, '$IMAGE']
+- command: [docker, run, --net, testbridge, --name, some-mysql-server, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, '$IMAGE']
 - command: [sleep, 30s]
 - command: [docker, run, --net, testbridge, --name, some-mysql-client, -d, '$IMAGE', sh, -c, 'sleep 320']
 
 teardown:
-- command: [docker, stop, some-mysql]
-- command: [docker, rm, some-mysql]
-- command: [docker, rm, -f, some-mysql-client]
+- command: [docker, stop, some-mysql-server, some-mysql-client]
+- command: [docker, rm, some-mysql-server, some-mysql-client]
 - command: [docker, network, rm, testbridge]
 
 target: some-mysql-client
 tests:
 - name: Can connect to remote container
-  command: [mysql, -hsome-mysql, -uroot, -pexample-password, -e, 'SHOW DATABASES']
+  command: [mysql, -h, some-mysql-server, -uroot, -pexample-password, -e, 'SHOW DATABASES']
   expect:
     stdout:
       matches: mysql
