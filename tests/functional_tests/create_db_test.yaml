@@ -15,14 +15,14 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 setup:
-- command: [docker, run, --name, some-mysql, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, '$IMAGE']
+- command: [docker, run, --name, some-mysql-$UNIQUE-id, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, '$IMAGE']
 - command: [sleep, 30s]
 
 teardown:
-- command: [docker, stop, some-mysql]
-- command: [docker, rm, some-mysql]
+- command: [docker, stop, some-mysql-$UNIQUE-id]
+- command: [docker, rm, some-mysql-$UNIQUE-id]
 
-target: some-mysql
+target: some-mysql-$UNIQUE-id
 tests:
 - name: Create a database
   command: [mysql, -uroot, -pexample-password, -e, 'CREATE DATABASE exampledb']
