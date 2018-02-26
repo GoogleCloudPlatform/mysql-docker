@@ -15,7 +15,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 _variables:
-  from: &from gcr.io/google-appengine/debian8
+  from: &from gcr.io/google-appengine/debian9
   gpg: &gpg A4A9406876FCBD3C456770C88C718D3B5072E1F5
   gosu: &gosu
     version: '1.10'
@@ -25,14 +25,14 @@ versions:
   - dir: '8/8.0'
     repo: mysql8
     tags:
-      - '8.0.3'
+      - '8.0.4'
       - '8.0'
       - 'latest'
     from: *from
     packages:
       gosu: *gosu
       mysql:
-        version: 8.0.3-rc-1debian8
+        version: 8.0.4-rc-1debian9
         major: '8.0'
         gpg: *gpg
   - dir: '5/5.7'
@@ -45,7 +45,7 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 5.7.21-1debian8
+        version: 5.7.21-1debian9
         major: '5.7'
         gpg: *gpg
   - dir: '5/5.6'
@@ -57,6 +57,6 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 5.6.39-1debian8
+        version: 5.6.39-1debian9
         major: '5.6'
         gpg: *gpg
