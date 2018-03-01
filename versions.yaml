@@ -23,36 +23,36 @@ _variables:
     gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
 
 versions:
-    - dir: '8/8-8.0'
-      repo: 8-mysql8
+    - dir: '8/9-8.0'
+      repo: 9-mysql8
       tags:
-        - '8.0.3'
-      from: *from8
+        - '8.0.4'
+      from: *from9
       packages:
         gosu: *gosu
         mysql:
-          version: 8.0.3-rc-1debian8
+          version: 8.0.4-rc-1debian9
           major: '8.0'
           gpg: *gpg
-    - dir: '5/8-5.6'
-      repo: 8-mysql5
+    - dir: '5/9-5.6'
+      repo: 9-mysql5
       tags:
         - '5.6.39'
-      from: *from8
+      from: *from9
       packages:
         gosu: *gosu
         mysql:
-          version: 5.6.39-1debian8
+          version: 5.6.39-1debian9
           major: '5.6'
           gpg: *gpg
-    - dir: '5/8-5.7'
-      repo: 8-mysql5
+    - dir: '5/9-5.7'
+      repo: 9-mysql5
       tags:
         - '5.7.21'
-      from: *from8
+      from: *from9
       packages:
         gosu: *gosu
         mysql:
-          version: 5.7.21-1debian8
+          version: 5.7.21-1debian9
           major: '5.7'
           gpg: *gpg
