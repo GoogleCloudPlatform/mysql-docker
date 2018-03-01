@@ -15,48 +15,60 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 _variables:
-  from: &from gcr.io/google-appengine/debian8
+  from8: &from8 gcr.io/google-appengine/debian8
+  from9: &from9 gcr.io/google-appengine/debian9
   gpg: &gpg A4A9406876FCBD3C456770C88C718D3B5072E1F5
   gosu: &gosu
     version: '1.10'
     gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
 
 versions:
-  - dir: '8/8.0'
-    repo: mysql8
-    tags:
-      - '8.0.3'
-      - '8.0'
-      - 'latest'
-    from: *from
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 8.0.3-rc-1debian8
-        major: '8.0'
-        gpg: *gpg
-  - dir: '5/5.7'
-    repo: mysql5
-    tags:
-      - '5.7.21'
-      - '5.7'
-      - 'latest'
-    from: *from
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 5.7.21-1debian8
-        major: '5.7'
-        gpg: *gpg
-  - dir: '5/5.6'
-    repo: mysql5
-    tags:
-      - '5.6.39'
-      - '5.6'
-    from: *from
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 5.6.39-1debian8
-        major: '5.6'
-        gpg: *gpg
+    - dir: '5/8-5.6'
+      repo: mysql5
+      tags:
+        - '5.6.39-debian8'
+        - '5.6-debian8'
+      from: *from8
+      packages:
+        gosu: *gosu
+        mysql:
+          version: 5.6.39-1debian8
+          major: '5.6'
+          gpg: *gpg
+    - dir: '5/8-5.7'
+      repo: mysql5
+      tags:
+        - '5.7.21-debian8'
+        - '5.7-debian8'
+      from: *from8
+      packages:
+        gosu: *gosu
+        mysql:
+          version: 5.7.21-1debian8
+          major: '5.7'
+          gpg: *gpg
+    - dir: '5/9-5.6'
+      repo: mysql5
+      tags:
+        - '5.6.39-debian9'
+        - '5.6-debian9'
+      from: *from9
+      packages:
+        gosu: *gosu
+        mysql:
+          version: 5.6.39-1debian9
+          major: '5.6'
+          gpg: *gpg
+    - dir: '5/9-5.7'
+      repo: mysql5
+      tags:
+        - '5.7.21-debian9'
+        - '5.7-debian9'
+        - 'latest'
+      from: *from9
+      packages:
+        gosu: *gosu
+        mysql:
+          version: 5.7.21-1debian9
+          major: '5.7'
+          gpg: *gpg

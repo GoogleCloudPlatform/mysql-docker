@@ -1,11 +1,10 @@
-FROM {{ .From }}
+FROM gcr.io/google-appengine/debian8
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
 # add gosu for easy step-down from root
-{{- $gosu := index .Packages "gosu" }}
-ENV GOSU_VERSION {{ $gosu.Version }}
+ENV GOSU_VERSION 1.10
 RUN set -ex; \
         if ! command -v gpg > /dev/null; then \
                 apt-get update; \
@@ -36,7 +35,7 @@ RUN set -x \
                 hkp://p80.pool.sks-keyservers.net:80 \
                 hkp://keyserver.ubuntu.com:80 \
         ; do \
-                gpg --keyserver $server --recv-keys {{ $gosu.Gpg }} \
+                gpg --keyserver $server --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
                         && found="yes" && break; \
         done; test -n "$found" \
         && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
@@ -47,35 +46,16 @@ RUN set -x \
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-{{- if or (eq .Dir "5/8-5.6") (eq .Dir "5/9-5.6") }}
-
 # FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
 # File::Basename
 # File::Copy
 # Sys::Hostname
 # Data::Dumper
 RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && rm -rf /var/lib/apt/lists/*
-{{- else if or (eq .Dir "5/8-5.7") (eq .Dir "5/9-5.7") (eq .Dir "8/8-8.0") (eq .Dir "8/9-8.0") }}
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-# for MYSQL_RANDOM_ROOT_PASSWORD
-                pwgen \
-# for mysql_ssl_rsa_setup
-                openssl \
-# FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
-# File::Basename
-# File::Copy
-# Sys::Hostname
-# Data::Dumper
-                perl \
-        && rm -rf /var/lib/apt/lists/*
-{{- end }}
-
-{{- $mysql := index .Packages "mysql" }}
 
 RUN set -ex; \
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-        key='{{ $mysql.Gpg }}'; \
+        key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
         export GNUPGHOME="$(mktemp -d)"; \
         export found='' \
         && for server in \
@@ -95,14 +75,9 @@ RUN set -ex; \
         gpg --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
         rm -rf "$GNUPGHOME";
 
-ENV MYSQL_MAJOR {{ $mysql.Major }}
-ENV MYSQL_VERSION {{ $mysql.Version }}
-
-{{- if or (eq .Dir "8/8-8.0") (eq .Dir "5/8-5.7") (eq .Dir "5/8-5.6") }}
+ENV MYSQL_MAJOR 5.6
+ENV MYSQL_VERSION 5.6.39-1debian8
 RUN echo "deb http://repo.mysql.com/apt/debian/ jessie mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
-{{- else }}
-RUN echo "deb http://repo.mysql.com/apt/debian/ stretch mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
-{{- end }}
 
 # the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
 # also, we set debconf keys to make APT a little quieter
@@ -112,53 +87,18 @@ RUN { \
                 echo mysql-community-server mysql-community-server/re-root-pass password ''; \
                 echo mysql-community-server mysql-community-server/remove-test-db select false; \
         } | debconf-set-selections \
-{{- if eq .Dir "8/8-8.0" }}
-        && apt-get update && apt-get install -y mysql-community-client-core="${MYSQL_VERSION}" mysql-community-server-core="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
-{{- else }}
-{{- if eq .Dir "8/9-8.0" }}
-        && apt-get update && apt-get install -y mysql-community-client-core="${MYSQL_VERSION}" mysql-community-server-core="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
-{{- else }}
         && apt-get update && apt-get install -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
-{{- end }}
-{{- end }}
         && rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
         && chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
 # ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
         && chmod 777 /var/run/mysqld
 
-{{- if eq .Dir "5/8-5.6" }}
-
 # comment out a few problematic configuration values
 # don't reverse lookup hostnames, they are usually another container
 RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
         && echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
-{{- else if eq .Dir "5/8-5.7" }}
-
-# comment out a few problematic configuration values
-# don't reverse lookup hostnames, they are usually another container
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/mysql.conf.d/mysqld.cnf \
-        && echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
-{{- end }}
-
-{{- if eq .Dir "5/9-5.6" }}
-# comment out a few problematic configuration values
-# don't reverse lookup hostnames, they are usually another container
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
-        && echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
-{{- else if eq .Dir "5/9-5.7" }}
-
-# comment out a few problematic configuration values
-# don't reverse lookup hostnames, they are usually another container
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/mysql.conf.d/mysqld.cnf \
-        && echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
-{{- end }}
 
 VOLUME /var/lib/mysql
-
-{{- if or (eq .Dir "8/8-8.0") (eq .Dir "8/9-8.0") }}
-# Config files
-COPY config/ /etc/mysql/
-{{- end }}
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh  # for backwards compatibility
