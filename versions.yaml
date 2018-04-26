@@ -38,25 +38,25 @@ versions:
   - dir: '5/5.7'
     repo: mysql5
     tags:
-      - '5.7.21'
+      - '5.7.22'
       - '5.7'
       - 'latest'
     from: *from
     packages:
       gosu: *gosu
       mysql:
-        version: 5.7.21-1debian8
+        version: 5.7.22-1debian8
         major: '5.7'
         gpg: *gpg
   - dir: '5/5.6'
     repo: mysql5
     tags:
-      - '5.6.39'
+      - '5.6.40'
       - '5.6'
     from: *from
     packages:
       gosu: *gosu
       mysql:
-        version: 5.6.39-1debian8
+        version: 5.6.40-1debian8
         major: '5.6'
         gpg: *gpg
