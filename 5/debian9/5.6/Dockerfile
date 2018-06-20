@@ -1,14 +1,11 @@
-FROM {{ .From }}
-
-{{- $mysql := index .Packages "mysql" }}
+FROM gcr.io/google-appengine/debian9:latest
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
 # add gosu for easy step-down from root
-{{- $gosu := index .Packages "gosu" }}
-ENV GOSU_VERSION {{ $gosu.Version }}
-ENV GOSU_GPG {{ $gosu.Gpg }}
+ENV GOSU_VERSION 1.10
+ENV GOSU_GPG B42F6819007F00F88E364FD4036A9C25BF357DD4
 RUN set -x \
   && apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
@@ -23,7 +20,21 @@ RUN set -x \
   && wget -O /usr/local/src/gosu.tar.gz "https://github.com/tianon/gosu/archive/$GOSU_VERSION.tar.gz" \
 # extract gosu binary and check signature
   && export GNUPGHOME="$(mktemp -d)" \
-  && {{ `gpg --keyserver $server --recv-keys $GOSU_GPG` | KeyServersRetryLoop "\t" }} \
+  && found='' && \
+	for server in \
+		pool.sks-keyservers.net \
+		na.pool.sks-keyservers.net \
+		eu.pool.sks-keyservers.net \
+		oc.pool.sks-keyservers.net \
+		ha.pool.sks-keyservers.net \
+		hkp://p80.pool.sks-keyservers.net:80 \
+		hkp://keyserver.ubuntu.com:80 \
+		pgp.mit.edu \
+	; do \
+		gpg --keyserver $server --recv-keys $GOSU_GPG \
+			&& found=yes && break; \
+	done; \
+	test -n "$found" \
   && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
   && rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
   && chmod +x /usr/local/bin/gosu \
@@ -32,57 +43,40 @@ RUN set -x \
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-{{- if eq $mysql.Major "5.6" }}
-
 # FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
 # File::Basename
 # File::Copy
 # Sys::Hostname
 # Data::Dumper
 RUN apt-get update && apt-get install -y perl pwgen --no-install-recommends && rm -rf /var/lib/apt/lists/*
-{{- else if (eq $mysql.Major "5.7") }}
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-# for MYSQL_RANDOM_ROOT_PASSWORD
-    pwgen \
-# for mysql_ssl_rsa_setup
-    openssl \
-# FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
-# File::Basename
-# File::Copy
-# Sys::Hostname
-# Data::Dumper
-    perl \
-  && rm -rf /var/lib/apt/lists/*
-{{- else if (eq $mysql.Major "8.0") }}
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-# for MYSQL_RANDOM_ROOT_PASSWORD
-    pwgen \
-# for mysql_ssl_rsa_setup
-    openssl \
-# FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
-# File::Basename
-# File::Copy
-# Sys::Hostname
-# Data::Dumper
-    perl \
-  && rm -rf /var/lib/apt/lists/*
-{{- end }}
 
 
-ENV MYSQL_GPG {{ $mysql.Gpg }}
+ENV MYSQL_GPG A4A9406876FCBD3C456770C88C718D3B5072E1F5
 RUN set -ex; \
 # gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-  key='{{ $mysql.Gpg }}'; \
+  key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
   export GNUPGHOME="$(mktemp -d)"; \
-  {{ `gpg --keyserver $server --recv-keys $MYSQL_GPG` | KeyServersRetryLoop "\t" }}; \
+  found='' && \
+	for server in \
+		pool.sks-keyservers.net \
+		na.pool.sks-keyservers.net \
+		eu.pool.sks-keyservers.net \
+		oc.pool.sks-keyservers.net \
+		ha.pool.sks-keyservers.net \
+		hkp://p80.pool.sks-keyservers.net:80 \
+		hkp://keyserver.ubuntu.com:80 \
+		pgp.mit.edu \
+	; do \
+		gpg --keyserver $server --recv-keys $MYSQL_GPG \
+			&& found=yes && break; \
+	done; \
+	test -n "$found"; \
   gpg --export "$MYSQL_GPG" > /etc/apt/trusted.gpg.d/mysql.gpg; \
   rm -rf "$GNUPGHOME"; \
   apt-key list > /dev/null
 
-ENV MYSQL_MAJOR {{ $mysql.Major }}
-ENV MYSQL_VERSION {{ $mysql.Version }}
+ENV MYSQL_MAJOR 5.6
+ENV MYSQL_VERSION 5.6.40-1debian9
 
 RUN DEBIAN_RELASE=$(cat /etc/*-release | grep PRETTY_NAME | sed  's/.*(//;s/).*//') \
     && echo "deb http://repo.mysql.com/apt/debian/ $DEBIAN_RELASE mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
@@ -95,37 +89,18 @@ RUN { \
     echo mysql-community-server mysql-community-server/re-root-pass password ''; \
     echo mysql-community-server mysql-community-server/remove-test-db select false; \
   } | debconf-set-selections \
-{{- if eq $mysql.Major "8.0" }}
-  && apt-get update && apt-get install -y mysql-community-client-core="${MYSQL_VERSION}" mysql-community-server-core="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
-{{- else }}
   && apt-get update && apt-get install -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
-{{- end }}
   && rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
   && chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
 # ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
   && chmod 777 /var/run/mysqld
 
-{{- if eq $mysql.Major "5.6" }}
-
 # comment out a few problematic configuration values
 # don't reverse lookup hostnames, they are usually another container
 RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
   && echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
-{{- else if eq $mysql.Major "5.7" }}
-
-# comment out a few problematic configuration values
-# don't reverse lookup hostnames, they are usually another container
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/mysql.conf.d/mysqld.cnf \
-  && echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
-{{- end }}
 
 VOLUME /var/lib/mysql
-
-{{- if eq $mysql.Major "8.0" }}
-
-# Config files
-COPY config/ /etc/mysql/
-{{- end }}
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh  # for backwards compatibility
