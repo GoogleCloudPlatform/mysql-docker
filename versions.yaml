@@ -26,9 +26,9 @@ versions:
   - dir: '8/debian9/8.0'
     repo: mysql8
     tags:
-      - '8.0.3-debian9'
+      - '8.0.11-debian9'
       - '8.0-debian9'
-      - '8.0.3'
+      - '8.0.11'
       - '8.0'
       - 'latest'
     from: *from9
