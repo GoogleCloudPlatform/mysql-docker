@@ -28,8 +28,10 @@ versions:
     tags:
       - '8.0.11-debian9'
       - '8.0-debian9'
+      - '8-debian9'
       - '8.0.11'
       - '8.0'
+      - '8'
       - 'latest'
     from: *from9
     packages:
@@ -43,8 +45,10 @@ versions:
     tags:
       - '5.7.22-debian9'
       - '5.7-debian9'
+      - '5-debian9'
       - '5.7.22'
       - '5.7'
+      - '5'
       - 'latest'
     from: *from9
     packages:
@@ -72,6 +76,7 @@ versions:
     tags:
       - '8.0.3-debian8'
       - '8.0-debian8'
+      - '8-debian8'
     from: *from8
     packages:
       gosu: *gosu
@@ -84,6 +89,7 @@ versions:
     tags:
       - '5.7.22-debian8'
       - '5.7-debian8'
+      - '5-debian8'
     from: *from8
     packages:
       gosu: *gosu
