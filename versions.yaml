@@ -26,10 +26,10 @@ versions:
   - dir: '8/debian9/8.0'
     repo: mysql8
     tags:
-      - '8.0.12-debian9'
+      - '8.0.13-debian9'
       - '8.0-debian9'
       - '8-debian9'
-      - '8.0.12'
+      - '8.0.13'
       - '8.0'
       - '8'
       - 'latest'
@@ -37,16 +37,16 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 8.0.12-1debian9
+        version: 8.0.13-1debian9
         major: '8.0'
         gpg: *gpg
   - dir: '5/debian9/5.7'
     repo: mysql5
     tags:
-      - '5.7.23-debian9'
+      - '5.7.24-debian9'
       - '5.7-debian9'
       - '5-debian9'
-      - '5.7.23'
+      - '5.7.24'
       - '5.7'
       - '5'
       - 'latest'
@@ -54,21 +54,21 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 5.7.23-1debian9
+        version: 5.7.24-1debian9
         major: '5.7'
         gpg: *gpg
   - dir: '5/debian9/5.6'
     repo: mysql5
     tags:
-      - '5.6.41-debian9'
+      - '5.6.42-debian9'
       - '5.6-debian9'
-      - '5.6.41'
+      - '5.6.42'
       - '5.6'
     from: *from9
     packages:
       gosu: *gosu
       mysql:
-        version: 5.6.41-1debian9
+        version: 5.6.42-1debian9
         major: '5.6'
         gpg: *gpg
   - dir: '8/debian8/8.0'
@@ -87,25 +87,25 @@ versions:
   - dir: '5/debian8/5.7'
     repo: mysql5
     tags:
-      - '5.7.23-debian8'
+      - '5.7.24-debian8'
       - '5.7-debian8'
       - '5-debian8'
     from: *from8
     packages:
       gosu: *gosu
       mysql:
-        version: 5.7.23-1debian8
+        version: 5.7.24-1debian8
         major: '5.7'
         gpg: *gpg
   - dir: '5/debian8/5.6'
     repo: mysql5
     tags:
-      - '5.6.41-debian8'
+      - '5.6.42-debian8'
       - '5.6-debian8'
     from: *from8
     packages:
       gosu: *gosu
       mysql:
-        version: 5.6.41-1debian8
+        version: 5.6.42-1debian8
         major: '5.6'
         gpg: *gpg
