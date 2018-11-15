@@ -31,11 +31,11 @@ RUN set -x \
 		hkp://keyserver.ubuntu.com:80 \
 		pgp.mit.edu \
 	; do \
-		gpg --keyserver $server --recv-keys $GOSU_GPG \
+		gpg --no-tty --keyserver $server --recv-keys $GOSU_GPG \
 			&& found=yes && break; \
 	done; \
 	test -n "$found" \
-  && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+  && gpg --no-tty --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
   && rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true \
@@ -73,11 +73,11 @@ RUN set -ex; \
 		hkp://keyserver.ubuntu.com:80 \
 		pgp.mit.edu \
 	; do \
-		gpg --keyserver $server --recv-keys $MYSQL_GPG \
+		gpg --no-tty --keyserver $server --recv-keys $MYSQL_GPG \
 			&& found=yes && break; \
 	done; \
 	test -n "$found"; \
-  gpg --export "$MYSQL_GPG" > /etc/apt/trusted.gpg.d/mysql.gpg; \
+  gpg --no-tty --export "$MYSQL_GPG" > /etc/apt/trusted.gpg.d/mysql.gpg; \
   rm -rf "$GNUPGHOME"; \
   apt-key list > /dev/null
 
