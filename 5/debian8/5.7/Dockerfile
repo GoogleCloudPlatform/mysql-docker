@@ -82,7 +82,7 @@ RUN set -ex; \
   apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.24-1debian8
+ENV MYSQL_VERSION 5.7.25-1debian8
 
 RUN DEBIAN_RELASE=$(cat /etc/*-release | grep PRETTY_NAME | sed  's/.*(//;s/).*//') \
     && echo "deb http://repo.mysql.com/apt/debian/ $DEBIAN_RELASE mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
