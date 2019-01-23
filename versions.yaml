@@ -16,7 +16,6 @@
 
 _variables:
   from9: &from9 gcr.io/google-appengine/debian9:latest
-  from8: &from8 gcr.io/google-appengine/debian8:latest
   gpg: &gpg A4A9406876FCBD3C456770C88C718D3B5072E1F5
   gosu: &gosu
     version: '1.10'
@@ -69,43 +68,5 @@ versions:
       gosu: *gosu
       mysql:
         version: 5.6.43-1debian9
-        major: '5.6'
-        gpg: *gpg
-  - dir: '8/debian8/8.0'
-    repo: mysql8
-    tags:
-      - '-debian8'
-      - '8.0-debian8'
-      - '8-debian8'
-    from: *from8
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 
-        major: '8.0'
-        gpg: *gpg
-  - dir: '5/debian8/5.7'
-    repo: mysql5
-    tags:
-      - '5.7.25-debian8'
-      - '5.7-debian8'
-      - '5-debian8'
-    from: *from8
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 5.7.25-1debian8
-        major: '5.7'
-        gpg: *gpg
-  - dir: '5/debian8/5.6'
-    repo: mysql5
-    tags:
-      - '5.6.43-debian8'
-      - '5.6-debian8'
-    from: *from8
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 5.6.43-1debian8
         major: '5.6'
         gpg: *gpg
