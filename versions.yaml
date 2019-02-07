@@ -25,10 +25,10 @@ versions:
   - dir: '8/debian9/8.0'
     repo: mysql8
     tags:
-      - '8.0.14-debian9'
+      - '8.0.15-debian9'
       - '8.0-debian9'
       - '8-debian9'
-      - '8.0.14'
+      - '8.0.15'
       - '8.0'
       - '8'
       - 'latest'
@@ -36,7 +36,7 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 8.0.14-1debian9
+        version: 8.0.15-1debian9
         major: '8.0'
         gpg: *gpg
   - dir: '5/debian9/5.7'
