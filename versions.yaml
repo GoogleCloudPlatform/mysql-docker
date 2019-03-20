@@ -24,6 +24,7 @@ _variables:
 versions:
   - dir: '8/debian9/8.0'
     repo: mysql8
+    templateSubDir: debian9
     tags:
       - '8.0.15-debian9'
       - '8.0-debian9'
@@ -41,6 +42,7 @@ versions:
         gpg: *gpg
   - dir: '5/debian9/5.7'
     repo: mysql5
+    templateSubDir: debian9
     tags:
       - '5.7.25-debian9'
       - '5.7-debian9'
@@ -58,6 +60,7 @@ versions:
         gpg: *gpg
   - dir: '5/debian9/5.6'
     repo: mysql5
+    templateSubDir: debian9
     tags:
       - '5.6.43-debian9'
       - '5.6-debian9'
@@ -70,3 +73,14 @@ versions:
         version: 5.6.43-1debian9
         major: '5.6'
         gpg: *gpg
+  - dir: 'exporter'
+    repo: mysql5
+    templateSubDir: exporter
+    tags:
+      - 'exporter'
+      - 'exporter-0.11.0'
+    from: *from9
+    packages:
+      mysqld_exporter:
+        version: 0.11.0
+        sha256: b53ad48ff14aa891eb6a959730ffc626db98160d140d9a66377394714c563acf
