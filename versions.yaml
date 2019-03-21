@@ -85,5 +85,5 @@ versions:
         version: 0.11.0
         sha256: b53ad48ff14aa891eb6a959730ffc626db98160d140d9a66377394714c563acf
     excludeTests:
-      - create_db_test.yaml
-      - remote_host_test.yaml
+      - tests/functional_tests/create_db_test.yaml
+      - tests/functional_tests/remote_host_test.yaml
