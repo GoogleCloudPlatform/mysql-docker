@@ -22,6 +22,7 @@ setup:
 - command: [sleep, 10s]
 - command: [docker, exec, mysqld-exporter-$UNIQUE-id, apt, update]
 - command: [docker, exec, mysqld-exporter-$UNIQUE-id, apt, install, curl, -y]
+
 teardown:
 - command: [docker, stop, mysql-server-$UNIQUE-id, mysqld-exporter-$UNIQUE-id]
 - command: [docker, rm, mysql-server-$UNIQUE-id, mysqld-exporter-$UNIQUE-id]
