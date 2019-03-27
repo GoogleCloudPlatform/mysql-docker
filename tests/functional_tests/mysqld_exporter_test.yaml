@@ -32,9 +32,8 @@ target: mysqld-exporter-$UNIQUE-id
 tests:
 - name: Is MySQL /metrics HTTP endpoint working
   command:
-    - sh
-    - -c
-    - curl http://localhost:9104/metrics
+    - curl
+    - http://localhost:9104/metrics
   expect:
     stdout:
       matches: '(?m)^mysql_up 1$'
