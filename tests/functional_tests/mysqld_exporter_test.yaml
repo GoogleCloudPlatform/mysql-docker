@@ -37,4 +37,4 @@ tests:
     - curl http://localhost:9104/metrics
   expect:
     stdout:
-      contains: '(?m)^mysql_up 1$'
+      matches: '(?m)^mysql_up 1$'
