@@ -18,7 +18,7 @@ setup:
 - command: [docker, network, create, -d, bridge, testbridge-$UNIQUE-id]
 - command: [docker, run, --net, testbridge-$UNIQUE-id, --name, mysql-server-$UNIQUE-id, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, 'launcher.gcr.io/google/mysql5']
 - command: [sleep, 30s]
-- command: [docker, run, --net, testbridge-$UNIQUE-id, --name, mysqld-exporter-$UNIQUE-id, -e, 'DATA_SOURCE_NAME=root:example-password@(testbridge-$UNIQUE-id:3306)/', -d, '$IMAGE']
+- command: [docker, run, --net, testbridge-$UNIQUE-id, --name, mysqld-exporter-$UNIQUE-id, -e, 'DATA_SOURCE_NAME=root:example-password@(mysql-server-$UNIQUE-id:3306)/', -d, '$IMAGE']
 - command: [sleep, 10s]
 - command: [docker, exec, mysqld-exporter-$UNIQUE-id, apt, update]
 - command: [docker, exec, mysqld-exporter-$UNIQUE-id, apt, install, curl, -y]
