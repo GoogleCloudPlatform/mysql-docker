@@ -20,10 +20,15 @@ _variables:
   gosu: &gosu
     version: '1.10'
     gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
+  excludeTests: &nonExporterTests
+    - tests/functional_tests/mysqld_exporter_test.yaml
 
 versions:
+
+  # MySQL 8 on Debian 9
   - dir: '8/debian9/8.0'
     repo: mysql8
+    templateSubDir: debian9
     tags:
       - '8.0.15-debian9'
       - '8.0-debian9'
@@ -39,8 +44,12 @@ versions:
         version: 8.0.15-1debian9
         major: '8.0'
         gpg: *gpg
+    excludeTests: *nonExporterTests
+
+  # MySQL 5.7 on Debian 9
   - dir: '5/debian9/5.7'
     repo: mysql5
+    templateSubDir: debian9
     tags:
       - '5.7.25-debian9'
       - '5.7-debian9'
@@ -56,8 +65,12 @@ versions:
         version: 5.7.25-1debian9
         major: '5.7'
         gpg: *gpg
+    excludeTests: *nonExporterTests
+
+  # MySQL 5.6 on Debian 9
   - dir: '5/debian9/5.6'
     repo: mysql5
+    templateSubDir: debian9
     tags:
       - '5.6.43-debian9'
       - '5.6-debian9'
@@ -70,3 +83,20 @@ versions:
         version: 5.6.43-1debian9
         major: '5.6'
         gpg: *gpg
+    excludeTests: *nonExporterTests
+
+  # MySQL Server Exporter
+  - dir: 'exporter'
+    repo: mysql5
+    templateSubDir: exporter
+    tags:
+      - 'exporter'
+      - 'exporter-0.11.0'
+    from: *from9
+    packages:
+      mysqld_exporter:
+        version: 0.11.0
+        sha256: b53ad48ff14aa891eb6a959730ffc626db98160d140d9a66377394714c563acf
+    excludeTests:
+      - tests/functional_tests/create_db_test.yaml
+      - tests/functional_tests/remote_host_test.yaml
