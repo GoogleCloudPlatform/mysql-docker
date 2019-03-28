@@ -25,7 +25,7 @@ _variables:
 
 versions:
 
-  # MySQL 8 on Debian 9
+  # MySQL 8.0 on Debian 9
   - dir: '8/debian9/8.0'
     repo: mysql8
     templateSubDir: debian9
