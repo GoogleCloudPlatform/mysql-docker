@@ -115,7 +115,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			echo 'Certificates initialized'
 		fi
 
-                SOCKET="/var/run/mysqld/mysqld.sock"
+		SOCKET="$(_get_config 'socket' "$@")"
 		"$@" --skip-networking --socket="${SOCKET}" &
 		pid="$!"
 
