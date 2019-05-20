@@ -16,7 +16,12 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-set -eo pipefail
+if [[ ! -z "${DEBUG_DOCKER_ENTERYPOINT}" ]]; then
+	set -x
+else
+	set -eo pipefail
+fi
+
 shopt -s nullglob
 
 # if command starts with an option, prepend mysqld
@@ -76,7 +81,7 @@ _check_config() {
 # latter only show values present in config files, and not server defaults
 _get_config() {
 	local conf="$1"; shift
-	"$@" --verbose --help --log-bin-index="$(mktemp -u)" 2>/dev/null | awk '$1 == "'"$conf"'" && $3=="" { print $2 }'
+        "$@" --verbose --help 2>/dev/null | grep "^$conf" | awk '$1 == "'"$conf"'" { print $2; exit }'
 }
 
 # allow the container to be started with `--user`
