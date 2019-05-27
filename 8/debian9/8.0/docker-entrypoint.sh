@@ -16,12 +16,12 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Enable bash debug if DEBUG_DOCKER_ENTERYPOINT exsists
 if [[ ! -z "${DEBUG_DOCKER_ENTERYPOINT}" ]]; then
 	set -x
-else
-	set -eo pipefail
 fi
 
+set -eo pipefail
 shopt -s nullglob
 
 # if command starts with an option, prepend mysqld
