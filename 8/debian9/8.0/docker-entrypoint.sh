@@ -18,6 +18,8 @@
 
 # Enable bash debug if DEBUG_DOCKER_ENTERYPOINT exsists
 if [[ ! -z "${DEBUG_DOCKER_ENTERYPOINT}" ]]; then
+	echo "!!! WARNING: DEBUG_DOCKER_ENTERYPOINT is enabled!"
+	echo "!!! WARNING: Use only for debugging. Do not use in production!"
 	set -x
 fi
 
