@@ -16,7 +16,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-# Enable bash debug if DEBUG_DOCKER_ENTERYPOINT exsists
+# Enable bash debug if DEBUG_DOCKER_ENTERYPOINT exists
 if [[ ! -z "${DEBUG_DOCKER_ENTERYPOINT}" ]]; then
 	echo "!!! WARNING: DEBUG_DOCKER_ENTERYPOINT is enabled!"
 	echo "!!! WARNING: Use only for debugging. Do not use in production!"
