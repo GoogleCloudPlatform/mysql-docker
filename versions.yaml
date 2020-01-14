@@ -30,10 +30,10 @@ versions:
     repo: mysql8
     templateSubDir: debian9
     tags:
-      - '8.0.18-debian9'
+      - '8.0.19-debian9'
       - '8.0-debian9'
       - '8-debian9'
-      - '8.0.18'
+      - '8.0.19'
       - '8.0'
       - '8'
       - 'latest'
@@ -41,9 +41,9 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 8.0.18-1debian9
+        version: 8.0.19-1debian9
         major: '8.0'
-        minor: '8.0.18'
+        minor: '8.0.19'
         gpg: *gpg
     excludeTests: *nonExporterTests
 
@@ -52,10 +52,10 @@ versions:
     repo: mysql5
     templateSubDir: debian9
     tags:
-      - '5.7.28-debian9'
+      - '5.7.29-debian9'
       - '5.7-debian9'
       - '5-debian9'
-      - '5.7.28'
+      - '5.7.29'
       - '5.7'
       - '5'
       - 'latest'
@@ -63,9 +63,9 @@ versions:
     packages:
       gosu: *gosu
       mysql:
-        version: 5.7.28-1debian9
+        version: 5.7.29-1debian9
         major: '5.7'
-        minor: '5.7.28'
+        minor: '5.7.29'
         gpg: *gpg
     excludeTests: *nonExporterTests
 
@@ -74,17 +74,17 @@ versions:
     repo: mysql5
     templateSubDir: debian9
     tags:
-      - '5.6.46-debian9'
+      - '5.6.47-debian9'
       - '5.6-debian9'
-      - '5.6.46'
+      - '5.6.47'
       - '5.6'
     from: *from9
     packages:
       gosu: *gosu
       mysql:
-        version: 5.6.46-1debian9
+        version: 5.6.47-1debian9
         major: '5.6'
-        minor: '5.6.46'
+        minor: '5.6.47'
         gpg: *gpg
     excludeTests: *nonExporterTests
 
