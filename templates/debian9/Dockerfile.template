@@ -1,7 +1,7 @@
-FROM {{ .From }}
+{{- $mysql := index .Packages "mysql" -}}
+{{- $c2dRelease := index .TemplateArgs "c2dRelease" -}}
 
-{{- $mysql := index .Packages "mysql" }}
-{{- $c2dRelease := index .TemplateArgs "c2dRelease" }}
+FROM {{ .From }}
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
