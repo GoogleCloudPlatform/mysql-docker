@@ -76,9 +76,9 @@ RUN set -ex; \
   apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.6
-ENV MYSQL_VERSION 5.6.49-1debian9
+ENV MYSQL_VERSION 5.6.50-1debian9
 
-ENV C2D_RELEASE 5.6.49
+ENV C2D_RELEASE 5.6.50
 
 RUN DEBIAN_RELASE=$(cat /etc/*-release | grep PRETTY_NAME | sed  's/.*(//;s/).*//') \
     && echo "deb http://repo.mysql.com/apt/debian/ $DEBIAN_RELASE mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
