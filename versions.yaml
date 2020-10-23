@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Google Inc.
+# Copyright 2020 Google LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,46 +14,91 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+
+cloudbuild:
+  enable_parallel: false
 versions:
-  - dir: '8/8.0'
-    repo: mysql8
-    tags:
-      - '8.0.1'
-      - '8.0'
-      - '8'
-      - latest
-    from: &from gcr.io/google-appengine/debian8
-    packages:
-      gosu: &gosu
-        version: '1.7'
-        gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
-      mysql:
-        version: 8.0.1-dmr-1debian8
-        major: '8.0'
-        gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
-  - dir: '5/5.7'
-    repo: mysql5
-    tags:
-      - '5.7.18'
-      - '5.7'
-      - '5'
-      - latest
-    from: *from
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 5.7.18-1debian8
-        major: '5.7'
-        gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
-  - dir: '5/5.6'
-    repo: mysql5
-    tags:
-      - '5.6.36'
-      - '5.6'
-    from: *from
-    packages:
-      gosu: *gosu
-      mysql:
-        version: 5.6.36-1debian8
-        major: '5.6'
-        gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
+- dir: 8/debian9/8.0
+  excludeTests:
+  - tests/functional_tests/mysqld_exporter_test.yaml
+  from: marketplace.gcr.io/google/debian9
+  packages:
+    gosu:
+      gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
+      version: '1.10'
+    mysql:
+      gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
+      major: '8.0'
+      version: 8.0.21-1debian9
+  repo: mysql8
+  tags:
+  - 8.0.21-debian9
+  - 8.0-debian9
+  - 8-debian9
+  - 8.0.21
+  - '8.0'
+  - '8'
+  - latest
+  templateArgs:
+    c2dRelease: 8.0.21
+  templateSubDir: debian9
+- dir: 5/debian9/5.7
+  excludeTests:
+  - tests/functional_tests/mysqld_exporter_test.yaml
+  from: marketplace.gcr.io/google/debian9
+  packages:
+    gosu:
+      gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
+      version: '1.10'
+    mysql:
+      gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
+      major: '5.7'
+      version: 5.7.31-1debian9
+  repo: mysql5
+  tags:
+  - 5.7.31-debian9
+  - 5.7-debian9
+  - 5-debian9
+  - 5.7.31
+  - '5.7'
+  - '5'
+  - latest
+  templateArgs:
+    c2dRelease: 5.7.31
+  templateSubDir: debian9
+- dir: 5/debian9/5.6
+  excludeTests:
+  - tests/functional_tests/mysqld_exporter_test.yaml
+  from: marketplace.gcr.io/google/debian9
+  packages:
+    gosu:
+      gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
+      version: '1.10'
+    mysql:
+      gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
+      major: '5.6'
+      version: 5.6.49-1debian9
+  repo: mysql5
+  tags:
+  - 5.6.49-debian9
+  - 5.6-debian9
+  - 5.6.49
+  - '5.6'
+  templateArgs:
+    c2dRelease: 5.6.49
+  templateSubDir: debian9
+- dir: exporter
+  excludeTests:
+  - tests/functional_tests/create_db_test.yaml
+  - tests/functional_tests/remote_host_test.yaml
+  from: marketplace.gcr.io/google/debian9
+  packages:
+    mysqld_exporter:
+      sha256: b53ad48ff14aa891eb6a959730ffc626db98160d140d9a66377394714c563acf
+      version: 0.11.0
+  repo: mysql5
+  tags:
+  - exporter
+  - exporter-0.11.0
+  templateSubDir: exporter
+

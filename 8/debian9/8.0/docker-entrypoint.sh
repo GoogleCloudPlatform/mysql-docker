@@ -16,6 +16,13 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+# Enable bash debug if DEBUG_DOCKER_ENTERYPOINT exists
+if [[ ! -z "${DEBUG_DOCKER_ENTERYPOINT}" ]]; then
+	echo "!!! WARNING: DEBUG_DOCKER_ENTERYPOINT is enabled!"
+	echo "!!! WARNING: Use only for debugging. Do not use in production!"
+	set -x
+fi
+
 set -eo pipefail
 shopt -s nullglob
 
@@ -76,7 +83,7 @@ _check_config() {
 # latter only show values present in config files, and not server defaults
 _get_config() {
 	local conf="$1"; shift
-	"$@" --verbose --help --log-bin-index="$(mktemp -u)" 2>/dev/null | awk '$1 == "'"$conf"'" { print $2; exit }'
+	"$@" --verbose --help --log-bin-index="$(mktemp -u)" 2>/dev/null | grep "^$conf" | awk '$1 == "'"$conf"'" { print $2; exit }'
 }
 
 # allow the container to be started with `--user`
@@ -160,8 +167,8 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			--  or products like mysql-fabric won't work
 			SET @@SESSION.SQL_LOG_BIN=0;
 
-			DELETE FROM mysql.user WHERE user NOT IN ('mysql.sys', 'mysqlxsys', 'root') OR host NOT IN ('localhost') ;
-			SET PASSWORD FOR 'root'@'localhost'=PASSWORD('${MYSQL_ROOT_PASSWORD}') ;
+			
+			ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}' ;
 			GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION ;
 			${rootCreate}
 			DROP DATABASE IF EXISTS test ;

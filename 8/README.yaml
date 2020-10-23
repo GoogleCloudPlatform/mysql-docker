@@ -1,0 +1,261 @@
+# Copyright (C) 2017 Google Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+# Used with http://github.com/GoogleCloudPlatform/runtimes-common/tree/master/docgen
+_templates:
+- &Image launcher.gcr.io/google/mysql8
+- &PullCommand gcloud docker -- pull launcher.gcr.io/google/mysql8
+- &ServiceArgs
+  name: mysql
+  image: *Image
+  environment:
+    MYSQL_ROOT_PASSWORD:
+      value: example-password
+- &BaseServerRun
+  <<: *ServiceArgs
+  exposedPorts:
+  - port: 3306
+- &BaseClientRun
+  name: mysql-client
+  image: *Image
+  runType: INTERACTIVE_SHELL
+- &BaseExec
+  execType: INTERACTIVE_SHELL
+
+overview:
+  description: |-
+    This image contains an installation MySQL 8.x.
+
+    For more information, see the
+    [Official Image Launcher Page](https://console.cloud.google.com/launcher/details/google/mysql8).
+  dockerfileUrl: https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/8
+  pullCommand: *PullCommand
+
+taskGroups:
+
+- title: Running MySQL server
+  description: This section describes how to spin up a MySQL service using this image.
+  tasks:
+  - title: Start a MySQL instance
+    runtimes: [DOCKER, KUBERNETES]
+    instructions:
+    - run: *BaseServerRun
+    - description: MySQL server is accessible on port 3306.
+      applicableRuntimes: [DOCKER]
+    - description: >-
+        For information about how to retain your database across restarts, see
+        [](#use-a-persistent-data-volume).
+    - description: >-
+        See [](#configurations) for how to customize your MySQL
+        service instance.
+    - description: >-
+        Also see [](#securely-set-up-the-server) for
+        how to bootstrap the server with a more secure root password, without
+        exposing it on the command line.
+  - title: Use a persistent data volume
+    runtimes: [DOCKER, KUBERNETES]
+    anchorId: use-a-persistent-data-volume
+    instructions:
+    - description: >-
+        We can store MySQL data on a persistent volume.
+        This way the database remains intact across restarts. Assume that
+        `/my/persistent/dir/mysql` is the persistent directory on the host.
+      applicableRuntimes: [DOCKER]
+    - description: >-
+        We can store MySQL data on a persistent volume.
+        This way the database remains intact across restarts.
+      applicableRuntimes: [KUBERNETES]
+    - run:
+        <<: *BaseServerRun
+        volumes:
+        - name: data
+          path: /var/lib/mysql
+          emptyPersistentVolume:
+            hostPath: /my/persistent/dir/mysql
+            subPath: data
+    - description: >-
+        Note that once the database directory is established,
+        `MYSQL_ROOT_PASSWORD` will be ignored when the instance restarts.
+  - title: Securely set up the server
+    anchorId: securely-set-up-the-server
+    description: >-
+      A recommended way to start up your MySQL server is to have the root
+      password generated as a onetime password. You will then log on and
+      change this password. MySQL will not fully function until this onetime
+      password is changed.
+    runtimes: [DOCKER, KUBERNETES]
+    instructions:
+    - description: >-
+        Start the container with both environment variables
+        `MYSQL_RANDOM_ROOT_PASSWORD` and `MYSQL_ONETIME_PASSWORD` set to `yes`.
+      run:
+        <<: *BaseServerRun
+        environment:
+          MYSQL_RANDOM_ROOT_PASSWORD:
+            value: "yes"
+          MYSQL_ONETIME_PASSWORD:
+            value: "yes"
+    - description: >-
+        You can then obtain the generated password by viewing the container log
+        and look for the "GENERATED ROOT PASSWORD" line.
+    - description: Open a shell to the container.
+      exec:
+        <<: *BaseExec
+        containerFromRun: *BaseServerRun
+        command: bash
+        subcommands:
+        - description: Now log in with the generated onetime password.
+          command: mysql -u root -p
+        - description: Once logged in, you can change the root password.
+          command: ALTER USER root IDENTIFIED BY 'new-password';
+    - description: >-
+        Also see [Environment Variable reference](#references-environment-variables)
+        for more information.
+
+- title: Command line MySQL client
+  description: This section describes how to use this image as a MySQL client.
+  tasks:
+  - title: Connect to a running MySQL container
+    runtimes: [DOCKER, KUBERNETES]
+    instructions:
+    - description: >-
+        You can run a MySQL client directly within the container.
+        Log on using the password for `root` user.
+      exec:
+        <<: *BaseExec
+        containerName: some-mysql
+        command: mysql -uroot -p
+
+  - title: Connect command line client to a remote MySQL instance
+    runtimes: [DOCKER, KUBERNETES]
+    instructions:
+    - description: >-
+        Assume that we have a MySQL instance running at `some.mysql.host` and
+        we want to log on as `some-mysql-user` when connecting.
+      run:
+        <<: *BaseClientRun
+        arguments:
+        - sh
+        - -c
+        - >-
+          'exec mysql -hsome.mysql.host -usome-mysql-user -p'
+    - description: >-
+        You will have to enter the password for `some-mysql-user` to log on,
+        even though there might not be a prompt to enter password due to
+        limitation of `kubectl run --attach`.
+      applicableRuntimes: [KUBERNETES]
+
+- title: Configurations
+  description: There are several ways to configure your MySQL service instance.
+  anchorId: configurations
+  tasks:
+  - title: Using configuration volume
+    runtimes: [DOCKER, KUBERNETES]
+    instructions:
+    - description: >-
+        If `/my/custom/path/config-file.cnf` is the path and name of your custom
+        configuration file, you can start your MySQL container like this.
+      run:
+        <<: *BaseServerRun
+        volumes:
+        - name: config
+          path: /etc/mysql/conf.d
+          singleFile:
+            hostFile: /my/custom/path/config-file.cnf
+    - description: >-
+        See [Volume reference](#references-volumes) for more details.
+  - title: Using flags
+    runtimes: [DOCKER, KUBERNETES]
+    instructions:
+    - description: >-
+        You can specify option flags directly to `mysqld` when starting your
+        instance. The following example sets the default encoding and collation
+        for all tables to UTF-8.
+      run:
+        <<: *BaseServerRun
+        arguments: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    - description: >-
+        You can also list all available options (several pages long).
+      run:
+        <<: *BaseClientRun
+        runType: ONESHOT
+        arguments: ["--verbose", "--help"]
+
+- title: Maintenance
+  tasks:
+  - title: Creating database dumps
+    runtimes: [DOCKER, KUBERNETES]
+    instructions:
+    - description: >-
+        All databases can be dumped into a `/some/path/all-databases.sql` file on the host
+        using the following command.
+      exec:
+        <<: *BaseExec
+        containerName: some-mysql
+        command: sh -c 'exec mysqldump --all-databases -uroot -p"$MYSQL_ROOT_PASSWORD"'
+        redirectOutputTo: /some/path/all-databases.sql
+    - description: >-
+        If your container was not started with a `MYSQL_ROOT_PASSWORD` value,
+        substitute `"$MYSQL_ROOT_PASSWORD"` with the password of the root user.
+        Alternatively, you can use another pair of username as password for
+        `-u` and `-p` arguments.
+
+portReference:
+  ports:
+  - port: '3306'
+    description: Standard MySQL port.
+
+environmentVariableReference:
+  variables:
+  - name: MYSQL_ROOT_PASSWORD
+    description: >-
+      The password for `root` superuser. Required.
+      <br><br>
+      Instead of the explicit password string, a file path can also be used,
+      in which case the content of the file is the password.
+  - name: MYSQL_DATABASE
+    description: Optionally specifies the name of the database to be created at startup.
+  - name: MYSQL_USER
+    description: >-
+      Optionally specifies a new user to be created at startup.
+      Must be used in conjunction with `MYSQL_PASSWORD`. Note that this
+      user is in addition to the default `root` superuser.
+      <br><br>
+      If `MYSQL_DATABASE` is also specified, this user will be granted
+      superuser permissions (i.e. `GRANT_ALL`) for that database.
+  - name: MYSQL_PASSWORD
+    description: Used in conjunction with `MYSQL_USER` to specify the password.
+  - name: MYSQL_RANDOM_ROOT_PASSWORD
+    description: >-
+      If set to `yes`, a random initial password for `root` superuser will be
+      generated. This password will be printed to stdout as
+      `GENERATED ROOT PASSWORD: ...`
+  - name: MYSQL_ONETIME_PASSWORD
+    description: >-
+      If set to `yes`, the initial password for `root` superuser, be it
+      specified via `MYSQL_ROOT_PASSWORD` or randomly generated (see
+      `MYSQL_RANDOM_ROOT_PASSWORD`), must be changed after startup.
+
+volumeReference:
+  volumes:
+  - path: /var/lib/mysql
+    description: Stores the database files.
+  - path: /etc/mysql/conf.d
+    description: >-
+      Contains custom `.cnf` configuration files.
+      <br><br>
+      MySQL startup configuration is specified in `/etc/mysql/my.cnf`, which
+      in turn includes any `.cnf` files found in `/etc/mysql/conf.d` directory.
