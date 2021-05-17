@@ -4,7 +4,7 @@ FROM marketplace.gcr.io/google/debian9
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
 # add gosu for easy step-down from root
-ENV GOSU_VERSION 1.10
+ENV GOSU_VERSION 1.11
 ENV GOSU_GPG B42F6819007F00F88E364FD4036A9C25BF357DD4
 RUN set -x \
   && apt-get update && apt-get install -y --no-install-recommends \
@@ -82,9 +82,9 @@ RUN set -ex; \
   apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 8.0
-ENV MYSQL_VERSION 8.0.23-1debian9
+ENV MYSQL_VERSION 8.0.24-1debian9
 
-ENV C2D_RELEASE 8.0.23
+ENV C2D_RELEASE 8.0.24
 
 RUN DEBIAN_RELASE=$(cat /etc/*-release | grep PRETTY_NAME | sed  's/.*(//;s/).*//') \
     && echo "deb http://repo.mysql.com/apt/debian/ $DEBIAN_RELASE mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
