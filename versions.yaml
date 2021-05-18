@@ -80,6 +80,8 @@ versions:
   - exporter
   - exporter-0.12
   - exporter-0.12.1
+  templateArgs:
+    exporter_notices_check_sum: eeddfcef6c3d473fd2a177eb2f17062cf06637b0798d404317c052d0ffe14523
   templateSubDir: exporter
 - dir: exporter
   excludeTests:
@@ -95,5 +97,7 @@ versions:
   - exporter
   - exporter-0.12
   - exporter-0.12.1
+  templateArgs:
+    exporter_notices_check_sum: eeddfcef6c3d473fd2a177eb2f17062cf06637b0798d404317c052d0ffe14523
   templateSubDir: exporter
 

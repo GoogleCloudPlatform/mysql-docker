@@ -1,13 +1,14 @@
 FROM {{ .From }} as exporter-builder
 
 {{- $mysqld_exporter := index .Packages "mysqld_exporter" }}
+{{- $template := index .TemplateArgs }}
 
 ENV GOPATH /usr/local
 
 ENV EXPORTER_VERSION {{ $mysqld_exporter.Version }}
 ENV EXPORTER_SHA256 {{ $mysqld_exporter.Sha256 }}
 
-ENV NOTICES_SHA256 10d281950f436a7178382754adfc425327a9b803e2bce91d8321b5559173ba3b
+ENV NOTICES_SHA256 {{ $template.exporter_notices_check_sum }}
 
 # Installs packages
 RUN set -eux \
