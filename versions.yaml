@@ -29,18 +29,18 @@ versions:
     mysql:
       gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
       major: '8.0'
-      version: 8.0.25-1debian9
+      version: 8.0.24-1debian9
   repo: mysql8
   tags:
-  - 8.0.25-debian9
+  - 8.0.24-debian9
   - 8.0-debian9
   - 8-debian9
-  - 8.0.25
+  - 8.0.24
   - '8.0'
   - '8'
   - latest
   templateArgs:
-    c2dRelease: 8.0.25
+    c2dRelease: 8.0.24
   templateSubDir: debian9
 - dir: 5/debian9/5.7
   excludeTests:
