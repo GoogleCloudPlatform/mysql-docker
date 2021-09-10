@@ -3,12 +3,12 @@
 This image contains an installation MySQL 8.x.
 
 For more information, see the
-[Official Image Launcher Page](https://console.cloud.google.com/launcher/details/google/mysql8).
+[Official Image Marketplace Page](https://console.cloud.google.com/marketplace/details/google/mysql8).
 
 Pull command (first install [gcloud](https://cloud.google.com/sdk/downloads)):
 
 ```shell
-gcloud docker -- pull launcher.gcr.io/google/mysql8
+gcloud docker -- pull marketplace.gcr.io/google/mysql8
 ```
 
 Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlatform/mysql-docker/tree/master/8).
@@ -47,7 +47,7 @@ Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlat
 
 # <a name="using-kubernetes"></a>Using Kubernetes
 
-Consult [Launcher container documentation](https://cloud.google.com/launcher/docs/launcher-container)
+Consult [marketplace container documentation](https://cloud.google.com/marketplace/docs/container-images)
 for additional information about setting up your Kubernetes environment.
 
 ## <a name="running-mysql-server-kubernetes"></a>Running MySQL server
@@ -67,7 +67,7 @@ metadata:
     name: some-mysql
 spec:
   containers:
-    - image: launcher.gcr.io/google/mysql8
+    - image: marketplace.gcr.io/google/mysql8
       name: mysql
       env:
         - name: "MYSQL_ROOT_PASSWORD"
@@ -105,7 +105,7 @@ metadata:
     name: some-mysql
 spec:
   containers:
-    - image: launcher.gcr.io/google/mysql8
+    - image: marketplace.gcr.io/google/mysql8
       name: mysql
       env:
         - name: "MYSQL_ROOT_PASSWORD"
@@ -162,7 +162,7 @@ metadata:
     name: some-mysql
 spec:
   containers:
-    - image: launcher.gcr.io/google/mysql8
+    - image: marketplace.gcr.io/google/mysql8
       name: mysql
       env:
         - name: "MYSQL_ONETIME_PASSWORD"
@@ -222,7 +222,7 @@ Assume that we have a MySQL instance running at `some.mysql.host` and we want to
 ```shell
 kubectl run \
   some-mysql-client \
-  --image launcher.gcr.io/google/mysql8 \
+  --image marketplace.gcr.io/google/mysql8 \
   --rm --attach --restart=Never \
   -it \
   -- sh -c 'exec mysql -hsome.mysql.host -usome-mysql-user -p'
@@ -256,7 +256,7 @@ metadata:
     name: some-mysql
 spec:
   containers:
-    - image: launcher.gcr.io/google/mysql8
+    - image: marketplace.gcr.io/google/mysql8
       name: mysql
       env:
         - name: "MYSQL_ROOT_PASSWORD"
@@ -297,7 +297,7 @@ metadata:
     name: some-mysql
 spec:
   containers:
-    - image: launcher.gcr.io/google/mysql8
+    - image: marketplace.gcr.io/google/mysql8
       name: mysql
       args:
         - --character-set-server=utf8mb4
@@ -322,7 +322,7 @@ You can also list all available options (several pages long).
 ```shell
 kubectl run \
   some-mysql-client \
-  --image launcher.gcr.io/google/mysql8 \
+  --image marketplace.gcr.io/google/mysql8 \
   --rm --attach --restart=Never \
   -- --verbose --help
 ```
@@ -341,7 +341,7 @@ If your container was not started with a `MYSQL_ROOT_PASSWORD` value, substitute
 
 # <a name="using-docker"></a>Using Docker
 
-Consult [Launcher container documentation](https://cloud.google.com/launcher/docs/launcher-container)
+Consult [marketplace container documentation](https://cloud.google.com/marketplace/docs/marketplace-container)
 for additional information about setting up your Docker environment.
 
 ## <a name="running-mysql-server-docker"></a>Running MySQL server
@@ -357,7 +357,7 @@ version: '2'
 services:
   mysql:
     container_name: some-mysql
-    image: launcher.gcr.io/google/mysql8
+    image: marketplace.gcr.io/google/mysql8
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
     ports:
@@ -372,7 +372,7 @@ docker run \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
   -p 3306:3306 \
   -d \
-  launcher.gcr.io/google/mysql8
+  marketplace.gcr.io/google/mysql8
 ```
 
 MySQL server is accessible on port 3306.
@@ -394,7 +394,7 @@ version: '2'
 services:
   mysql:
     container_name: some-mysql
-    image: launcher.gcr.io/google/mysql8
+    image: marketplace.gcr.io/google/mysql8
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
     ports:
@@ -412,7 +412,7 @@ docker run \
   -p 3306:3306 \
   -v /my/persistent/dir/mysql:/var/lib/mysql \
   -d \
-  launcher.gcr.io/google/mysql8
+  marketplace.gcr.io/google/mysql8
 ```
 
 Note that once the database directory is established, `MYSQL_ROOT_PASSWORD` will be ignored when the instance restarts.
@@ -430,7 +430,7 @@ version: '2'
 services:
   mysql:
     container_name: some-mysql
-    image: launcher.gcr.io/google/mysql8
+    image: marketplace.gcr.io/google/mysql8
     environment:
       "MYSQL_ONETIME_PASSWORD": "yes"
       "MYSQL_RANDOM_ROOT_PASSWORD": "yes"
@@ -447,7 +447,7 @@ docker run \
   -e "MYSQL_RANDOM_ROOT_PASSWORD=yes" \
   -p 3306:3306 \
   -d \
-  launcher.gcr.io/google/mysql8
+  marketplace.gcr.io/google/mysql8
 ```
 
 You can then obtain the generated password by viewing the container log and look for the "GENERATED ROOT PASSWORD" line.
@@ -493,7 +493,7 @@ docker run \
   --name some-mysql-client \
   --rm \
   -it \
-  launcher.gcr.io/google/mysql8 \
+  marketplace.gcr.io/google/mysql8 \
   sh -c 'exec mysql -hsome.mysql.host -usome-mysql-user -p'
 ```
 
@@ -512,7 +512,7 @@ version: '2'
 services:
   mysql:
     container_name: some-mysql
-    image: launcher.gcr.io/google/mysql8
+    image: marketplace.gcr.io/google/mysql8
     environment:
       "MYSQL_ROOT_PASSWORD": "example-password"
     ports:
@@ -530,7 +530,7 @@ docker run \
   -p 3306:3306 \
   -v /my/custom/path/config-file.cnf:/etc/mysql/conf.d/config-file.cnf \
   -d \
-  launcher.gcr.io/google/mysql8
+  marketplace.gcr.io/google/mysql8
 ```
 
 See [Volume reference](#references-volumes) for more details.
@@ -546,7 +546,7 @@ version: '2'
 services:
   mysql:
     container_name: some-mysql
-    image: launcher.gcr.io/google/mysql8 \
+    image: marketplace.gcr.io/google/mysql8 \
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
@@ -564,7 +564,7 @@ docker run \
   -e "MYSQL_ROOT_PASSWORD=example-password" \
   -p 3306:3306 \
   -d \
-  launcher.gcr.io/google/mysql8 \
+  marketplace.gcr.io/google/mysql8 \
   --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 ```
 
@@ -574,7 +574,7 @@ You can also list all available options (several pages long).
 docker run \
   --name some-mysql-client \
   --rm \
-  launcher.gcr.io/google/mysql8 \
+  marketplace.gcr.io/google/mysql8 \
   --verbose --help
 ```
 
