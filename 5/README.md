@@ -3,7 +3,7 @@
 This image contains an installation MySQL 5.x.
 
 For more information, see the
-[Official Image marketplace Page](https://console.cloud.google.com/marketplace/details/google/mysql5).
+[Official Image Marketplace Page](https://console.cloud.google.com/marketplace/details/google/mysql5).
 
 Pull command (first install [gcloud](https://cloud.google.com/sdk/downloads)):
 
@@ -47,7 +47,7 @@ Dockerfile for this image can be found [here](https://github.com/GoogleCloudPlat
 
 # <a name="using-kubernetes"></a>Using Kubernetes
 
-Consult [marketplace container documentation](https://cloud.google.com/marketplace/docs/container-images)
+Consult [Marketplace container documentation](https://cloud.google.com/marketplace/docs/container-images)
 for additional information about setting up your Kubernetes environment.
 
 ## <a name="running-mysql-server-kubernetes"></a>Running MySQL server
@@ -341,7 +341,7 @@ If your container was not started with a `MYSQL_ROOT_PASSWORD` value, substitute
 
 # <a name="using-docker"></a>Using Docker
 
-Consult [marketplace container documentation](https://cloud.google.com/marketplace/docs/marketplace-container)
+Consult [Marketplace container documentation](https://cloud.google.com/marketplace/docs/marketplace-container)
 for additional information about setting up your Docker environment.
 
 ## <a name="running-mysql-server-docker"></a>Running MySQL server
