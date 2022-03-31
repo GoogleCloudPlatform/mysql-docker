@@ -1,4 +1,4 @@
-FROM marketplace.gcr.io/google/debian9 as exporter-builder
+FROM marketplace.gcr.io/google/debian10 as exporter-builder
 
 ENV GOPATH /usr/local
 
@@ -39,7 +39,7 @@ RUN set -eux \
     # Verifies checksum. Changing the checksum means changing the licenses.
     && echo "${NOTICES_SHA256} /NOTICES" | sha256sum -c
 
-FROM marketplace.gcr.io/google/debian9
+FROM marketplace.gcr.io/google/debian10
 
 COPY --from=exporter-builder /mysqld_exporter /bin/mysqld_exporter
 COPY --from=exporter-builder /LICENSE /usr/share/mysqld_exporter/LICENSE
