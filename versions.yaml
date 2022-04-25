@@ -27,7 +27,7 @@ versions:
       gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
       version: '1.14'
     mysql:
-      gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
+      gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
       major: '8.0'
       version: 8.0.28
   repo: mysql8
@@ -49,7 +49,7 @@ versions:
       gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
       version: '1.14'
     mysql:
-      gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
+      gpg: A4A9406876FCBD3C456770C88C718D3B5072E1F5
       major: '5.7'
       version: 5.7.37
   repo: mysql5
