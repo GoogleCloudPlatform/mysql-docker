@@ -8,8 +8,6 @@ ENV GOPATH /usr/local
 ENV EXPORTER_VERSION {{ $mysqld_exporter.Version }}
 ENV EXPORTER_SHA256 {{ $mysqld_exporter.Sha256 }}
 
-ENV NOTICES_SHA256 {{ $template.exporter_notices_check_sum }}
-
 # Installs packages
 RUN set -eux \
     && apt-get update \
@@ -35,18 +33,10 @@ RUN set -eux \
     && mkdir -p "${GOPATH}/src/github.com/prometheus/mysqld_exporter" \
     && tar -xzf /tmp/mysqld_exporter.tar.gz --strip-components=1 -C "${GOPATH}/src/github.com/prometheus/mysqld_exporter"
 
-RUN set -eux \
-    # Extracts licences
-    && cd "${GOPATH}/src/github.com/prometheus/mysqld_exporter" \
-    && govendor license +vendor > /NOTICES \
-    # Verifies checksum. Changing the checksum means changing the licenses.
-    && echo "${NOTICES_SHA256} /NOTICES" | sha256sum -c
-
 FROM {{ .From }}
 
 COPY --from=exporter-builder /mysqld_exporter /bin/mysqld_exporter
 COPY --from=exporter-builder /LICENSE /usr/share/mysqld_exporter/LICENSE
-COPY --from=exporter-builder /NOTICES /usr/share/mysqld_exporter/NOTICES
 COPY --from=exporter-builder /usr/local/src/github.com/prometheus/mysqld_exporter /usr/local/src/mysqld_exporter
 
 EXPOSE 9104

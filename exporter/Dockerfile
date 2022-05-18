@@ -2,10 +2,8 @@ FROM marketplace.gcr.io/google/debian10 as exporter-builder
 
 ENV GOPATH /usr/local
 
-ENV EXPORTER_VERSION 0.12.1
-ENV EXPORTER_SHA256 133b0c281e5c6f8a34076b69ade64ab6cac7298507d35b96808234c4aa26b351
-
-ENV NOTICES_SHA256 eeddfcef6c3d473fd2a177eb2f17062cf06637b0798d404317c052d0ffe14523
+ENV EXPORTER_VERSION 0.14.0
+ENV EXPORTER_SHA256 c17402137a4e9745f593127f162c1003298910cb8aa7d05bee3384738de094ae
 
 # Installs packages
 RUN set -eux \
@@ -32,18 +30,10 @@ RUN set -eux \
     && mkdir -p "${GOPATH}/src/github.com/prometheus/mysqld_exporter" \
     && tar -xzf /tmp/mysqld_exporter.tar.gz --strip-components=1 -C "${GOPATH}/src/github.com/prometheus/mysqld_exporter"
 
-RUN set -eux \
-    # Extracts licences
-    && cd "${GOPATH}/src/github.com/prometheus/mysqld_exporter" \
-    && govendor license +vendor > /NOTICES \
-    # Verifies checksum. Changing the checksum means changing the licenses.
-    && echo "${NOTICES_SHA256} /NOTICES" | sha256sum -c
-
 FROM marketplace.gcr.io/google/debian10
 
 COPY --from=exporter-builder /mysqld_exporter /bin/mysqld_exporter
 COPY --from=exporter-builder /LICENSE /usr/share/mysqld_exporter/LICENSE
-COPY --from=exporter-builder /NOTICES /usr/share/mysqld_exporter/NOTICES
 COPY --from=exporter-builder /usr/local/src/github.com/prometheus/mysqld_exporter /usr/local/src/mysqld_exporter
 
 EXPOSE 9104
