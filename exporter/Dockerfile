@@ -1,4 +1,4 @@
-FROM marketplace.gcr.io/google/debian10 as exporter-builder
+FROM marketplace.gcr.io/google/debian11 as exporter-builder
 
 ENV GOPATH /usr/local
 
@@ -30,7 +30,7 @@ RUN set -eux \
     && mkdir -p "${GOPATH}/src/github.com/prometheus/mysqld_exporter" \
     && tar -xzf /tmp/mysqld_exporter.tar.gz --strip-components=1 -C "${GOPATH}/src/github.com/prometheus/mysqld_exporter"
 
-FROM marketplace.gcr.io/google/debian10
+FROM marketplace.gcr.io/google/debian11
 
 COPY --from=exporter-builder /mysqld_exporter /bin/mysqld_exporter
 COPY --from=exporter-builder /LICENSE /usr/share/mysqld_exporter/LICENSE
