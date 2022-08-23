@@ -29,21 +29,21 @@ versions:
     mysql:
       gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
       major: '8.0'
-      version: 8.0.29
+      version: 8.0.30
   repo: mysql8
   tags:
-  - 8.0.29-debian11
+  - 8.0.30-debian11
   - 8.0-debian11
   - 8-debian11
-  - 8.0.29
+  - 8.0.30
   - '8.0'
   - '8'
   - latest
   templateSubDir: debian11
-- dir: 5/debian11/5.7
+- dir: 5/debian10/5.7
   excludeTests:
   - tests/functional_tests/mysqld_exporter_test.yaml
-  from: marketplace.gcr.io/google/debian11
+  from: marketplace.gcr.io/google/debian10
   packages:
     gosu:
       gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
@@ -51,17 +51,17 @@ versions:
     mysql:
       gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
       major: '5.7'
-      version: 5.7.38
+      version: 5.7.39
   repo: mysql5
   tags:
-  - 5.7.38-debian11
-  - 5.7-debian11
-  - 5-debian11
-  - 5.7.38
+  - 5.7.39-debian10
+  - 5.7-debian10
+  - 5-debian10
+  - 5.7.39
   - '5.7'
   - '5'
   - latest
-  templateSubDir: debian11
+  templateSubDir: debian10
 - dir: exporter
   excludeTests:
   - tests/functional_tests/create_db_test.yaml

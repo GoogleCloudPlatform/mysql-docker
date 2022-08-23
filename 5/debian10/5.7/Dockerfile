@@ -1,4 +1,4 @@
-FROM marketplace.gcr.io/google/debian11
+FROM marketplace.gcr.io/google/debian10
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
@@ -56,11 +56,11 @@ RUN set -eux; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"
 
-ENV MYSQL_MAJOR 8.0
-ENV MYSQL_VERSION 8.0.30-1debian11
-ENV C2D_RELEASE 8.0.30
+ENV MYSQL_MAJOR 5.7
+ENV MYSQL_VERSION 5.7.39-1debian10
+ENV C2D_RELEASE 5.7.39
 
-RUN echo "deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/apt/debian/ bullseye mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
+RUN echo "deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/apt/debian/ buster mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
 # the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
 # also, we set debconf keys to make APT a little quieter
@@ -72,8 +72,13 @@ RUN { \
   } | debconf-set-selections \
   && apt-get --allow-releaseinfo-change update \
 	&& apt-get install -y \
-    	mysql-community-client="${MYSQL_VERSION}" \
-		  mysql-community-server-core="${MYSQL_VERSION}" \
+  		mysql-server="${MYSQL_VERSION}" \
+# comment out a few problematic configuration values
+	&& find /etc/mysql/ -name '*.cnf' -print0 \
+		| xargs -0 grep -lZE '^(bind-address|log)' \
+		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/' \
+# don't reverse lookup hostnames, they are usually another container
+	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf \
   && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
@@ -81,8 +86,6 @@ RUN { \
 	&& chmod 1777 /var/run/mysqld /var/lib/mysql
 
 VOLUME /var/lib/mysql
-# Config files
-COPY config/ /etc/mysql/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh  # for backwards compatibility
