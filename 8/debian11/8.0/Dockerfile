@@ -43,6 +43,7 @@ RUN set -eux; \
 		perl \
 		xz-utils \
 		zstd \
+    libtasn1-6
 	; \
 	rm -rf /var/lib/apt/lists/*
 
