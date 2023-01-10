@@ -32,6 +32,12 @@ RUN set -eux \
 
 FROM marketplace.gcr.io/google/debian11
 
+#resolve security issues
+RUN apt-get update; \
+  	apt-get install -y --no-install-recommends libtasn1-6; \
+  	rm -rf /var/lib/apt/lists/*
+
+
 COPY --from=exporter-builder /mysqld_exporter /bin/mysqld_exporter
 COPY --from=exporter-builder /LICENSE /usr/share/mysqld_exporter/LICENSE
 COPY --from=exporter-builder /usr/local/src/github.com/prometheus/mysqld_exporter /usr/local/src/mysqld_exporter
