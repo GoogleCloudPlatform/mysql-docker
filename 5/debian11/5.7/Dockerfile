@@ -1,7 +1,4 @@
-{{- $mysql := index .Packages "mysql" -}}
-{{- $gosu := index .Packages "gosu" -}}
-
-FROM {{ .From }}
+FROM marketplace.gcr.io/google/c2d-debian11
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
@@ -10,7 +7,7 @@ RUN apt-get --allow-releaseinfo-change update && apt-get install -y --no-install
 
 # add gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION {{ $gosu.Version }}
+ENV GOSU_VERSION 1.14
 RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get --allow-releaseinfo-change update; \
@@ -20,7 +17,7 @@ RUN set -eux; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
 	wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys {{ $gosu.Gpg }}; \
+	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
 	gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc; \
@@ -46,12 +43,13 @@ RUN set -eux; \
 		perl \
 		xz-utils \
 		zstd \
+    libtasn1-6 \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
 # gpg: key 3A79BD29: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	key='{{ $mysql.Gpg }}'; \
+	key='859BE8D7C586F538430B19C2467B942D3A79BD29'; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
 	mkdir -p /etc/apt/keyrings; \
@@ -59,9 +57,9 @@ RUN set -eux; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"
 
-ENV MYSQL_MAJOR {{ $mysql.Major }}
-ENV MYSQL_VERSION {{ $mysql.Version }}-1debian10
-ENV C2D_RELEASE {{ $mysql.Version }}
+ENV MYSQL_MAJOR 5.7
+ENV MYSQL_VERSION 5.7.42-1debian10
+ENV C2D_RELEASE 5.7.42
 
 RUN echo "deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/apt/debian/ buster mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
@@ -75,10 +73,6 @@ RUN { \
   } | debconf-set-selections \
   && apt-get --allow-releaseinfo-change update \
 	&& apt-get install -y \
-{{- if eq $mysql.Major "8.0" }}
-    	mysql-community-client="${MYSQL_VERSION}" \
-		  mysql-community-server-core="${MYSQL_VERSION}" \
-{{- else }}
   		mysql-server="${MYSQL_VERSION}" \
 # comment out a few problematic configuration values
 	&& find /etc/mysql/ -name '*.cnf' -print0 \
@@ -86,7 +80,6 @@ RUN { \
 		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/' \
 # don't reverse lookup hostnames, they are usually another container
 	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf \
-{{- end }}
   && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
@@ -94,11 +87,6 @@ RUN { \
 	&& chmod 1777 /var/run/mysqld /var/lib/mysql
 
 VOLUME /var/lib/mysql
-
-{{- if eq $mysql.Major "8.0" }}
-# Config files
-COPY config/ /etc/mysql/
-{{- end }}
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh  # for backwards compatibility

@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,18 +29,21 @@ versions:
     mysql:
       gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
       major: '8.0'
-      version: 8.0.33
+      version: 8.0.34
   repo: mysql8
   tags:
-  - 8.0.33-debian11
+  - 8.0.34-debian11
   - 8.0-debian11
   - 8-debian11
-  - 8.0.33
+  - 8.0.34
   - '8.0'
   - '8'
   - latest
   templateSubDir: debian11
-- dir: 5/debian10/5.7
+  templateArgs:
+    aptRepo: bullseye
+    aptDebianVersion: '11'
+- dir: 5/debian11/5.7
   excludeTests:
   - tests/functional_tests/mysqld_exporter_test.yaml
   from: marketplace.gcr.io/google/c2d-debian11
@@ -61,7 +64,10 @@ versions:
   - '5.7'
   - '5'
   - latest
-  templateSubDir: debian10
+  templateSubDir: debian11
+  templateArgs:
+    aptRepo: buster
+    aptDebianVersion: '10'
 - dir: exporter
   excludeTests:
   - tests/functional_tests/create_db_test.yaml
