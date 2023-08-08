@@ -25,7 +25,7 @@ versions:
   packages:
     gosu:
       gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
-      version: '1.14'
+      version: '1.16'
     mysql:
       gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
       major: '8.0'
