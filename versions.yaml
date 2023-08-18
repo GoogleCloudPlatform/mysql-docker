@@ -39,6 +39,9 @@ versions:
   - '8.0'
   - '8'
   - latest
+  templateArgs:
+    distroMajor: '11'
+    distroCodename: bullseye
   templateSubDir: debian11
 - dir: 5/debian11/5.7
   excludeTests:
@@ -61,6 +64,9 @@ versions:
   - '5.7'
   - '5'
   - latest
+  templateArgs:
+    distroMajor: '10'
+    distroCodename: buster
   templateSubDir: debian11
 - dir: exporter
   excludeTests:
@@ -92,4 +98,3 @@ versions:
   - exporter-0.14
   - exporter-0.14.0
   templateSubDir: exporter
-
