@@ -39,10 +39,10 @@ versions:
   - '8.0'
   - '8'
   - latest
-  templateSubDir: debian11
   templateArgs:
-    aptRepo: bullseye
-    aptDebianVersion: '11'
+    distroMajor: '11'
+    distroCodename: bullseye
+  templateSubDir: debian11
 - dir: 5/debian11/5.7
   excludeTests:
   - tests/functional_tests/mysqld_exporter_test.yaml
@@ -50,7 +50,7 @@ versions:
   packages:
     gosu:
       gpg: B42F6819007F00F88E364FD4036A9C25BF357DD4
-      version: '1.16'
+      version: '1.14'
     mysql:
       gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
       major: '5.7'
@@ -64,10 +64,10 @@ versions:
   - '5.7'
   - '5'
   - latest
-  templateSubDir: debian11
   templateArgs:
-    aptRepo: buster
-    aptDebianVersion: '10'
+    distroMajor: '10'
+    distroCodename: buster
+  templateSubDir: debian11
 - dir: exporter
   excludeTests:
   - tests/functional_tests/create_db_test.yaml
