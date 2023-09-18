@@ -1,4 +1,4 @@
-# Copyright (C) 2019 Google Inc.
+# Copyright (C) 2023 Google Inc.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,9 +16,9 @@
 
 setup:
 - command: [docker, network, create, -d, bridge, testbridge-$UNIQUE-id]
-- command: [docker, run, --net, testbridge-$UNIQUE-id, --name, mysql-server-$UNIQUE-id, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, 'launcher.gcr.io/google/mysql5']
+- command: [docker, run, --net, testbridge-$UNIQUE-id, --name, mysql-server-$UNIQUE-id, -e, 'MYSQL_ROOT_PASSWORD=example-password', -d, 'marketplace.gcr.io/google/mysql8']
 - command: [sleep, 30s]
-- command: [docker, run, --net, testbridge-$UNIQUE-id, --name, mysqld-exporter-$UNIQUE-id, -e, 'DATA_SOURCE_NAME=root:example-password@(mysql-server-$UNIQUE-id:3306)/', -d, '$IMAGE']
+- command: [docker, run, --net, testbridge-$UNIQUE-id, --name, mysqld-exporter-$UNIQUE-id, -e, 'MYSQLD_EXPORTER_PASSWORD=example-password', -d, '$IMAGE', --mysqld.address, "mysql-server-$UNIQUE-id:3306", --mysqld.username, root]
 - command: [sleep, 10s]
 - command: [docker, exec, mysqld-exporter-$UNIQUE-id, apt, update]
 - command: [docker, exec, mysqld-exporter-$UNIQUE-id, apt, install, curl, -y]
