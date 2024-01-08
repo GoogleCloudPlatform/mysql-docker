@@ -48,7 +48,7 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
-# gpg: key A8D3785C: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
+# gpg: key 3A79BD29: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
 	key='BCA43417C3B485DD128EC6D4B7B3B788A8D3785C'; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
