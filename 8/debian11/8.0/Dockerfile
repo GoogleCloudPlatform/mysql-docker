@@ -3,7 +3,7 @@ FROM marketplace.gcr.io/google/c2d-debian11
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
-RUN apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends gnupg dirmngr && rm -rf /var/lib/apt/lists/* && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7B3B788A8D3785C
+RUN apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends gnupg dirmngr && rm -rf /var/lib/apt/lists/*
 
 # add gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
@@ -49,7 +49,7 @@ RUN set -eux; \
 
 RUN set -eux; \
 # gpg: key 3A79BD29: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	key='859BE8D7C586F538430B19C2467B942D3A79BD29'; \
+	key='B7B3B788A8D3785C'; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
 	mkdir -p /etc/apt/keyrings; \
