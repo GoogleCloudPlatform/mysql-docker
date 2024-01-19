@@ -49,7 +49,7 @@ RUN set -eux; \
 
 RUN set -eux; \
 # gpg: key 3A79BD29: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	key='859BE8D7C586F538430B19C2467B942D3A79BD29'; \
+	key='B7B3B788A8D3785C'; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
 	mkdir -p /etc/apt/keyrings; \
@@ -58,8 +58,8 @@ RUN set -eux; \
 	rm -rf "$GNUPGHOME"
 
 ENV MYSQL_MAJOR 8.0
-ENV MYSQL_VERSION 8.0.34-1debian11
-ENV C2D_RELEASE 8.0.34
+ENV MYSQL_VERSION 8.0.36-1debian11
+ENV C2D_RELEASE 8.0.36
 
 RUN echo "deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/apt/debian/  bullseye  mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 

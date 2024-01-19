@@ -1,4 +1,4 @@
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,13 +29,13 @@ versions:
     mysql:
       gpg: 859BE8D7C586F538430B19C2467B942D3A79BD29
       major: '8.0'
-      version: 8.0.34
+      version: 8.0.36
   repo: mysql8
   tags:
-  - 8.0.34-debian11
+  - 8.0.36-debian11
   - 8.0-debian11
   - 8-debian11
-  - 8.0.34
+  - 8.0.36
   - '8.0'
   - '8'
   - latest
