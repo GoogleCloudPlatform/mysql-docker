@@ -3,7 +3,7 @@ FROM marketplace.gcr.io/google/c2d-debian11
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
-RUN apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends gnupg dirmngr && rm -rf /var/lib/apt/lists/*
+RUN apt-get --allow-releaseinfo-change update && apt-get install -y --no-install-recommends gnupg dirmngr && rm -rf /var/lib/apt/lists/* && sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B7B3B788A8D3785C
 
 # add gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
