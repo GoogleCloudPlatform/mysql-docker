@@ -1,17 +1,15 @@
-FROM marketplace.gcr.io/google/c2d-debian11 as exporter-builder
+FROM golang:1.21 as exporter-builder
 
 ENV GOPATH /usr/local
 
-ENV EXPORTER_VERSION 0.14.0
-ENV EXPORTER_SHA256 c17402137a4e9745f593127f162c1003298910cb8aa7d05bee3384738de094ae
+ENV EXPORTER_VERSION 0.15.1
+ENV EXPORTER_SHA256 85ea5bc68e1b9f466c1df10ff016652dd210371d42245e012b876265e89ae29d
 
 # Installs packages
 RUN set -eux \
     && apt-get update \
     && apt-get install -y \
         curl \
-        golang \
-        govendor \
         tar
 
 RUN set -eux \
@@ -30,7 +28,7 @@ RUN set -eux \
     && mkdir -p "${GOPATH}/src/github.com/prometheus/mysqld_exporter" \
     && tar -xzf /tmp/mysqld_exporter.tar.gz --strip-components=1 -C "${GOPATH}/src/github.com/prometheus/mysqld_exporter"
 
-FROM marketplace.gcr.io/google/c2d-debian11
+FROM marketplace.gcr.io/google/debian12
 
 #resolve security issues
 RUN apt-get update; \
@@ -38,8 +36,8 @@ RUN apt-get update; \
   	rm -rf /var/lib/apt/lists/*
 
 
-COPY --from=exporter-builder /mysqld_exporter /bin/mysqld_exporter
-COPY --from=exporter-builder /LICENSE /usr/share/mysqld_exporter/LICENSE
+COPY --from=exporter-builder /go/mysqld_exporter /bin/mysqld_exporter
+COPY --from=exporter-builder /go/LICENSE /usr/share/mysqld_exporter/LICENSE
 COPY --from=exporter-builder /usr/local/src/github.com/prometheus/mysqld_exporter /usr/local/src/mysqld_exporter
 
 EXPOSE 9104
