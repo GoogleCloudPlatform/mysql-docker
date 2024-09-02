@@ -1,4 +1,4 @@
-FROM {{ .From }} as exporter-builder
+FROM golang:1.21 as exporter-builder
 
 {{- $mysqld_exporter := index .Packages "mysqld_exporter" }}
 {{- $template := index .TemplateArgs }}
@@ -13,8 +13,6 @@ RUN set -eux \
     && apt-get update \
     && apt-get install -y \
         curl \
-        golang \
-        govendor \
         tar
 
 RUN set -eux \
@@ -41,8 +39,8 @@ RUN apt-get update; \
   	rm -rf /var/lib/apt/lists/*
 
 
-COPY --from=exporter-builder /mysqld_exporter /bin/mysqld_exporter
-COPY --from=exporter-builder /LICENSE /usr/share/mysqld_exporter/LICENSE
+COPY --from=exporter-builder /go/mysqld_exporter /bin/mysqld_exporter
+COPY --from=exporter-builder /go/LICENSE /usr/share/mysqld_exporter/LICENSE
 COPY --from=exporter-builder /usr/local/src/github.com/prometheus/mysqld_exporter /usr/local/src/mysqld_exporter
 
 EXPOSE 9104

@@ -1,4 +1,4 @@
-FROM marketplace.gcr.io/google/c2d-debian11
+FROM marketplace.gcr.io/google/debian12
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
@@ -7,7 +7,7 @@ RUN apt-get --allow-releaseinfo-change update && apt-get install -y --no-install
 
 # add gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION 1.16
+ENV GOSU_VERSION 1.17
 RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get --allow-releaseinfo-change update; \
@@ -49,7 +49,7 @@ RUN set -eux; \
 
 RUN set -eux; \
 # gpg: key 3A79BD29: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	key='859BE8D7C586F538430B19C2467B942D3A79BD29'; \
+	key='BCA4 3417 C3B4 85DD 128E C6D4 B7B3 B788 A8D3 785C'; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
 	mkdir -p /etc/apt/keyrings; \
@@ -57,11 +57,11 @@ RUN set -eux; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"
 
-ENV MYSQL_MAJOR 5.7
-ENV MYSQL_VERSION 5.7.42-1debian10
-ENV C2D_RELEASE 5.7.42
+ENV MYSQL_MAJOR 8.0
+ENV MYSQL_VERSION 8.0.39-1debian12
+ENV C2D_RELEASE 8.0.39
 
-RUN echo "deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/apt/debian/  buster  mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
+RUN echo "deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/apt/debian/  bookworm  mysql-${MYSQL_MAJOR}" > /etc/apt/sources.list.d/mysql.list
 
 # the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
 # also, we set debconf keys to make APT a little quieter
@@ -73,13 +73,8 @@ RUN { \
   } | debconf-set-selections \
   && apt-get --allow-releaseinfo-change update \
 	&& apt-get install -y \
-  		mysql-server="${MYSQL_VERSION}" \
-# comment out a few problematic configuration values
-	&& find /etc/mysql/ -name '*.cnf' -print0 \
-		| xargs -0 grep -lZE '^(bind-address|log)' \
-		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/' \
-# don't reverse lookup hostnames, they are usually another container
-	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf \
+    	mysql-community-client="${MYSQL_VERSION}" \
+		  mysql-community-server-core="${MYSQL_VERSION}" \
   && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
@@ -87,6 +82,8 @@ RUN { \
 	&& chmod 1777 /var/run/mysqld /var/lib/mysql
 
 VOLUME /var/lib/mysql
+# Config files
+COPY config/ /etc/mysql/
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh  # for backwards compatibility
