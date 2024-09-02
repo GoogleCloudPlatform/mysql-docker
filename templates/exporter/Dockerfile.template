@@ -1,7 +1,8 @@
-FROM golang:1.21 as exporter-builder
+{{- $golang := index .Packages "golang" -}}
+{{- $mysqld_exporter := index .Packages "mysqld_exporter" -}}
+{{- $template := index .TemplateArgs -}}
 
-{{- $mysqld_exporter := index .Packages "mysqld_exporter" }}
-{{- $template := index .TemplateArgs }}
+FROM golang:{{ $golang.Minor }} as exporter-builder
 
 ENV GOPATH /usr/local
 
