@@ -87,11 +87,11 @@ versions:
     golang:
       minor: 1.21
     mysqld_exporter:
+      sha256: 85ea5bc68e1b9f466c1df10ff016652dd210371d42245e012b876265e89ae29d
+      version: 0.15.1
   annotations:
   - key: com.googleapis.cloudmarketplace.product.service.name
     value: services/13da159e-d102-4c5c-b567-c11745a06cf7.cloudpartnerservices.goog
-      sha256: 85ea5bc68e1b9f466c1df10ff016652dd210371d42245e012b876265e89ae29d
-      version: 0.15.1
   repo: mysql8
   tags:
   - exporter
